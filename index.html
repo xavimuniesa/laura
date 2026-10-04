@@ -794,8 +794,8 @@ const PIV  = { x: 467.5, y: 560 };          // suspensió del pèndol (amagada d
 const BOBO = { x: 408 - 467.5, y: 975 - 560, s: 120 };   // origen del sprite de la llentilla, relatiu al pivot
 const ROD_TIP = 1110 - 560;
 const DIAL = { x: 466, y: 407.5 };
-const PEND_T = 1.1;                          // període complet (s): ~0,30 m de pèndol
-const PEND_A = 4.0 * Math.PI/180;            // amplitud
+const PEND_T = 2.0;                          // període complet (s): un batec per segon, com el model
+const PEND_A = 0.058;                         // amplitud (rad, ≈3,3°), la mateixa del model
 
 const pc = document.getElementById('pc'), pctx = pc.getContext('2d');
 const rotor = document.getElementById('rotor');
@@ -1098,10 +1098,12 @@ let lastSign = 0, tockFlag = false, lastChimeKey = '', backRunning = false;
 function backFrame(){
   if (!(side === 'back' || flipping)) { backRunning = false; return; }
   const now = new Date(), t = now.getTime()/1000;
-  const ph = Math.sin(2*Math.PI*t/PEND_T), th = PEND_A * ph;
+  // moviment sinusoidal suau; els extrems coincideixen amb cada segon exacte
+  const th = -PEND_A * Math.cos(2*Math.PI*t/PEND_T);
   // el tic sona just després de passar pel centre (alliberament de l'àncora)
-  const sign = Math.sign(Math.sin(2*Math.PI*t/PEND_T - 0.18));
-  if (sign !== lastSign) { if (lastSign !== 0 && side === 'back') { pendTick(tockFlag); tockFlag = !tockFlag; } lastSign = sign; }
+  // un tic (o un tac) a cada segon, sincronitzat amb l'arribada del pèndol a l'extrem
+  const sec = Math.floor(t);
+  if (sec !== lastSign) { if (lastSign !== 0 && side === 'back') pendTick(sec % 2 === 1); lastSign = sec; }
   pctx.setTransform(1,0,0,1,0,0); pctx.clearRect(0,0,545,1640);
   pctx.setTransform(1,0,0,1,-196,-20);     // la imatge està retallada al contorn del rellotge
   if (clockImg.complete) pctx.drawImage(clockImg, 196, 20);
