@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Quinqué i pèndol</title>
 <meta name="description" content="Natura morta a l'oli de Laura López amb quinqué que s'encén de nit; la paret gira i mostra un rellotge de pèndol amb carilló de Westminster, calendari i temps.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1a120c">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Quinqué">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&display=swap" rel="stylesheet">
 <style>
@@ -111,7 +119,7 @@
       linear-gradient(180deg,rgba(255,255,255,.05),rgba(0,0,0,.18))}
 
   /* ---- el rellotge, protagonista ---- */
-  #clockBox{position:relative;z-index:1;height:min(96vh,96svh,calc(94vw * 1640 / 545));aspect-ratio:545/1640;
+  #clockBox{position:relative;z-index:1;height:min(96vh,calc(94vw * 1640 / 545));height:min(96vh,96svh,calc(94vw * 1640 / 545));aspect-ratio:545/1640;
     transition:transform .5s cubic-bezier(.3,.7,.3,1)}
   #clockShadow{position:absolute;inset:0;width:100%;height:100%;
     filter:brightness(0) blur(12px);opacity:.78;transform:translate(2.6%,1.6%)}
@@ -185,18 +193,21 @@
     .grip{width:5px;height:56px}
     .sum{writing-mode:vertical-rl;transform:rotate(180deg);font-size:18px;max-height:60%}
     .chev{transform:rotate(-90deg)} #drawer.open .chev{transform:rotate(90deg)}
-    .dbody{flex:1;padding:18px 26px 18px 6px}
+    .dbody{flex:1;padding:18px calc(26px + env(safe-area-inset-right)) 18px 6px}
     .back.dopen #clockBox{transform:translateX(calc(-1 * min(220px,20vw) + 31px))}
     .rivet.a{left:5px;top:5px}.rivet.b{left:5px;bottom:5px}
+    body.back #snd{right:calc(74px + env(safe-area-inset-right))}
+    body.back #hint{right:calc(122px + env(safe-area-inset-right))}
   }
   /* vertical: la placa puja des de baix */
   @media (max-aspect-ratio: 1/1){
     .face.back{align-items:flex-start}
-    #clockBox{height:min(calc(100svh - 74px),calc(94vw * 1640 / 545));margin-top:max(8px,env(safe-area-inset-top))}
-    #drawer{left:0;right:0;bottom:0;height:min(80svh,700px);border-radius:12px 12px 0 0;
+    #clockBox{height:min(calc(100vh - 74px),calc(94vw * 1640 / 545));height:min(calc(100svh - 74px),calc(94vw * 1640 / 545));margin-top:max(8px,env(safe-area-inset-top))}
+    #drawer{left:0;right:0;bottom:0;height:min(88vh,740px);height:min(88svh,740px);border-radius:12px 12px 0 0;
       transform:translateY(calc(100% - var(--peek)));display:flex;flex-direction:column}
     #drawer.open{transform:translateY(0)}
-    .tab{flex:none;height:var(--peek);padding:0 22px 0 76px}
+    #drawer{--peek:calc(62px + env(safe-area-inset-bottom))}
+    .tab{flex:none;height:var(--peek);padding:0 22px env(safe-area-inset-bottom) 76px}
     .grip{position:absolute;left:50%;top:8px;width:46px;height:5px;transform:translateX(-50%)}
     .sum{flex:1;font-size:18px;padding-top:6px}
     .chev{transform:rotate(0deg);margin-top:6px} #drawer.open .chev{transform:rotate(180deg)}
@@ -204,6 +215,19 @@
     .rivet.a{left:6px;top:6px}.rivet.b{right:6px;top:6px}
   }
   @media (max-aspect-ratio: 1/1) and (max-width:380px){ .alerts{grid-template-columns:1fr} }
+  /* mòbil en horitzontal: placa més ampla i lletra compacta perquè res no quedi tallat */
+  @media (min-aspect-ratio: 1/1) and (max-height:560px){
+    #drawer{--peek:52px;width:min(430px,58vw);height:calc(100vh - 12px);height:calc(100svh - 12px)}
+    .dbody{padding:12px calc(14px + env(safe-area-inset-right)) 12px 4px}
+    .sum{font-size:15px}
+    .sec{padding:10px 2px 2px} .sec h3{font-size:12px;letter-spacing:.2em;margin-bottom:5px}
+    .dn,.temp{font-size:46px} .wd{font-size:19px} .mo{font-size:16px} .place{font-size:23px}
+    .row{font-size:15px;margin-top:5px} .row svg{width:26px;height:26px} .small{font-size:13px}
+    .sub,.meta{font-size:14px} .cond{font-size:17px}
+    .al{font-size:13.5px;padding:6px 7px;gap:7px} .al svg{width:22px;height:22px}
+    .upd{font-size:12px}
+    .back.dopen #clockBox{transform:translateX(calc(-1 * min(215px,29vw) + 26px))}
+  }
 
   /* botons flotants (gir i carilló) */
   .fbtn{position:fixed;bottom:max(14px,env(safe-area-inset-bottom));width:44px;height:44px;border-radius:50%;
@@ -226,9 +250,30 @@
   /* en vertical, amb la placa a baix, els botons pugen per sobre de la pestanya */
   @media (max-aspect-ratio: 1/1){
     body.back .fbtn, body.back #snd{bottom:calc(74px + env(safe-area-inset-bottom))}
-    body.back.dopen #flip, body.back.dopen #chime, body.back.dopen #snd{opacity:0;pointer-events:none}
+    body.back.dopen #flip, body.back.dopen #chime{opacity:0;pointer-events:none}
     body.back #hint{bottom:calc(82px + env(safe-area-inset-bottom))}
   }
+  body.back.dopen #snd, body.back.dopen #hint, body.back.dopen #install{opacity:0;pointer-events:none}
+  #wake{position:fixed;right:max(14px,env(safe-area-inset-right));bottom:calc(max(14px,env(safe-area-inset-bottom)) + 50px);
+       width:40px;height:40px;border-radius:50%;border:1px solid rgba(80,50,30,.35);z-index:5;cursor:pointer;
+       background:rgba(245,238,226,.72);color:#4a2a1a;display:grid;place-items:center;
+       backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);transition:opacity .6s,background .6s}
+  #wake[hidden]{display:none}
+  #wake svg{width:20px;height:20px} #wake .off{display:none}
+  #wake[aria-pressed="false"] .on{display:none} #wake[aria-pressed="false"] .off{display:block}
+  body.night #wake{background:rgba(40,32,26,.6);color:#e9d2b0;border-color:rgba(255,220,180,.2)}
+  body.back #wake{background:rgba(20,40,38,.6);color:#e9d8b4;border-color:rgba(255,230,190,.25)}
+  body.back.dopen #wake{opacity:0;pointer-events:none}
+  @media (min-aspect-ratio: 1/1){ body.back #wake{right:calc(74px + env(safe-area-inset-right))} }
+  @media (max-aspect-ratio: 1/1){ body.back #wake{bottom:calc(124px + env(safe-area-inset-bottom))} }
+  #install{left:calc(max(14px,env(safe-area-inset-left)) + 108px)}
+  body:not(.back) #install{left:calc(max(14px,env(safe-area-inset-left)) + 54px)}
+  #iosTip{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:9;
+    display:block;width:max-content;max-width:92vw;padding:10px 38px 10px 14px;border-radius:14px;text-align:center;
+    font:15px/1.3 Georgia,serif;color:#2a1808;background:rgba(246,236,214,.96);box-shadow:0 6px 24px rgba(0,0,0,.4)}
+  #iosTip[hidden]{display:none}
+  #iosTip svg{vertical-align:-3px;margin:0 2px}
+  #iosTip button{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:none;font-size:22px;color:#5a3a1a;cursor:pointer}
   @media (prefers-reduced-motion: reduce){ #drawer,#clockBox{transition:none} }
 </style>
 </head>
@@ -268,19 +313,6 @@
       </div>
       <div class="dbody" id="dBody">
         <section class="sec">
-          <h3 class="eng">Calendari</h3>
-          <div class="bigline eng"><span class="dn" id="cDn">—</span><span><span class="wd" id="cWd">—</span><br><span class="mo" id="cMo">—</span></span></div>
-          <div class="row eng"><svg viewBox="-16 -16 32 32" id="moonSvg" aria-hidden="true"></svg><div><div id="mName">—</div><div class="small" id="mIll"></div></div></div>
-          <div class="row eng"><svg viewBox="0 0 32 32" aria-hidden="true"><g fill="none" stroke="#3a2410" stroke-width="1.7" stroke-linecap="round"><path d="M4 23h24"/><path d="M9 23a7 7 0 0114 0"/><path d="M16 7v4M7.5 12l2.5 2.5M24.5 12L22 14.5M3.5 18.5h3M25.5 18.5h3"/></g></svg>
-            <div><div><span id="sRise">—</span> · <span id="sSet">—</span></div><div class="small" id="sLen"></div></div></div>
-        </section>
-        <section class="sec">
-          <h3 class="eng">Lloc</h3>
-          <div class="place eng" id="wPlace">Localitzant…</div>
-          <div class="sub eng" id="wSub">&nbsp;</div>
-          <div class="meta eng"><span id="wAlt">Altitud —</span><span id="wCoord"></span></div>
-        </section>
-        <section class="sec">
           <h3 class="eng">Temps ara</h3>
           <div class="bigline eng"><span class="temp" id="wTemp">—</span><span class="cond" id="wCond">&nbsp;</span></div>
           <div class="meta eng"><span id="wFeel"></span><span id="wHum"></span><span id="wWind"></span></div>
@@ -294,6 +326,19 @@
             <div class="al eng s" id="aSnow"><svg viewBox="0 0 26 26"><path d="M13 3v20M4.3 8l17.4 10M4.3 18L21.7 8"/><path d="M10.5 4.5L13 7l2.5-2.5M10.5 21.5L13 19l2.5 2.5"/></svg><div><b>Neu</b><span>—</span></div></div>
           </div>
           <div class="upd eng" id="wUpd">&nbsp;</div>
+        </section>
+        <section class="sec">
+          <h3 class="eng">Lloc</h3>
+          <div class="place eng" id="wPlace">Localitzant…</div>
+          <div class="sub eng" id="wSub">&nbsp;</div>
+          <div class="meta eng"><span id="wAlt">Altitud —</span><span id="wCoord"></span></div>
+        </section>
+        <section class="sec">
+          <h3 class="eng">Calendari</h3>
+          <div class="bigline eng"><span class="dn" id="cDn">—</span><span><span class="wd" id="cWd">—</span><br><span class="mo" id="cMo">—</span></span></div>
+          <div class="row eng"><svg viewBox="-16 -16 32 32" id="moonSvg" aria-hidden="true"></svg><div><div id="mName">—</div><div class="small" id="mIll"></div></div></div>
+          <div class="row eng"><svg viewBox="0 0 32 32" aria-hidden="true"><g fill="none" stroke="#3a2410" stroke-width="1.7" stroke-linecap="round"><path d="M4 23h24"/><path d="M9 23a7 7 0 0114 0"/><path d="M16 7v4M7.5 12l2.5 2.5M24.5 12L22 14.5M3.5 18.5h3M25.5 18.5h3"/></g></svg>
+            <div><div><span id="sRise">—</span> · <span id="sSet">—</span></div><div class="small" id="sLen"></div></div></div>
         </section>
       </div>
     </aside>
@@ -312,6 +357,14 @@
   <svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 010 7M19 6a8.5 8.5 0 010 12"/></svg>
 </button>
 <div id="hint">Toca per activar el so</div>
+<button id="wake" aria-pressed="true" title="Pantalla sempre encesa" aria-label="Mantén la pantalla encesa" hidden>
+  <svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+  <svg class="off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10c2 3 5 5 9 5s7-2 9-5"/><path d="M6.5 13.5L5 16M12 15v3M17.5 13.5L19 16"/></svg>
+</button>
+<button id="install" class="fbtn" title="Instal·la l'aplicació" aria-label="Instal·la l'aplicació" hidden>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg>
+</button>
+<div id="iosTip" role="note" hidden>Per instal·lar-la: toca <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-label="Comparteix"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 11v9h14v-9"/></svg> i després <b>Afegeix a la pantalla d'inici</b><button aria-label="Tanca">×</button></div>
 
 <script>
 (()=>{
@@ -410,6 +463,7 @@ function enableSound(fromGesture){
   if (userMuted && fromGesture !== 'button') return;
   try {
     if (!actx) {
+      try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch(e){}
       actx = new (window.AudioContext || window.webkitAudioContext)();
       noiseBuf = actx.createBuffer(1, Math.floor(actx.sampleRate*0.05), actx.sampleRate);
       const ch = noiseBuf.getChannelData(0);
@@ -800,13 +854,13 @@ function setDrawer(open){
 (() => {
   let start = null, moved = false;
   const size = () => horiz() ? drawer.offsetWidth : drawer.offsetHeight;
-  const peek = 62;
+  const peekPx = () => horiz() ? dTab.offsetWidth : dTab.offsetHeight;
   function down(e){
     if (e.button > 0) return;
     const onTab = dTab.contains(e.target);
     if (!onTab && !dOpen) return;
     if (!onTab && document.getElementById('dBody').scrollTop > 0 && !horiz()) return;   // deixa fer scroll dins la placa
-    start = { x: e.clientX, y: e.clientY, t: performance.now(), base: dOpen ? 0 : size() - peek, onTab };
+    start = { x: e.clientX, y: e.clientY, t: performance.now(), base: dOpen ? 0 : size() - peekPx(), onTab };
     moved = false; drawer.setPointerCapture(e.pointerId);
   }
   function move(e){
@@ -814,7 +868,7 @@ function setDrawer(open){
     const d = horiz() ? e.clientX - start.x : e.clientY - start.y;
     if (!moved && Math.abs(d) < 6) return;
     moved = true; drawer.classList.add('drag');
-    const pos = Math.max(0, Math.min(size() - peek, start.base + d));
+    const pos = Math.max(0, Math.min(size() - peekPx(), start.base + d));
     drawer.style.transform = horiz() ? `translate(${pos}px,-50%)` : `translateY(${pos}px)`;
     start.pos = pos; start.v = d / Math.max(1, performance.now() - start.t);
   }
@@ -823,7 +877,7 @@ function setDrawer(open){
     drawer.classList.remove('drag');
     if (!moved) { if (start.onTab) setDrawer(!dOpen); }
     else {
-      const frac = start.pos / (size() - peek);
+      const frac = start.pos / (size() - peekPx());
       const fast = Math.abs(start.v) > 0.5;
       setDrawer(fast ? start.v < 0 : frac < 0.5);
     }
@@ -1101,6 +1155,105 @@ async function refreshInfo(force){
 }
 refreshInfo(true);
 setInterval(() => refreshInfo(false), 60e3);
+// en tornar a la pàgina (o en despertar l'ordinador) es posa al dia de seguida si les dades són velles
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { updateCalendar(); refreshInfo(false); } });
+// la ubicació es torna a demanar cada hora, per si l'ordinador o el mòbil s'han desplaçat
+setInterval(() => {
+  if (!navigator.geolocation || document.hidden) return;
+  navigator.geolocation.getCurrentPosition(p => {
+    const moved = Math.hypot(p.coords.latitude - LAT, p.coords.longitude - LON) > 0.01;
+    LAT = p.coords.latitude; LON = p.coords.longitude;
+    if (moved) refreshInfo(true);
+  }, () => {}, { timeout: 10000, maximumAge: 30*60e3 });
+}, 60*60e3);
+
+/* ---------- pantalla sempre encesa (evita el salvapantalles i el repòs de pantalla) ---------- */
+(() => {
+  const btn = document.getElementById('wake');
+  let want = true, lock = null, video = null;
+  try { want = localStorage.getItem('wake') !== '0'; } catch(e){}
+  const native = 'wakeLock' in navigator;
+  // alternativa per a navegadors antics (iOS < 16.4): un vídeo mut minúscul en bucle
+  function fallbackVideo(){
+    if (video) return video;
+    video = document.createElement('video');
+    video.setAttribute('playsinline',''); video.setAttribute('muted',''); video.muted = true; video.loop = true;
+    video.style.cssText = 'position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;left:0;top:0';
+    // vídeo negre MP4 de 2 s (H.264, compatible amb Safari antic)
+    video.src = 'data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAMrbW9vdgAAAGxtdmhkAAAAAAAAAAAAAAAAAAAD6AAAB9AAAQAAAQAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAlV0cmFrAAAAXHRraGQAAAADAAAAAAAAAAAAAAABAAAAAAAAB9AAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAABAAAAAQAAAAAAAkZWR0cwAAABxlbHN0AAAAAAAAAAEAAAfQAAAAAAABAAAAAAHNbWRpYQAAACBtZGhkAAAAAAAAAAAAAAAAAABAAAAAgABVxAAAAAAALWhkbHIAAAAAAAAAAHZpZGUAAAAAAAAAAAAAAABWaWRlb0hhbmRsZXIAAAABeG1pbmYAAAAUdm1oZAAAAAEAAAAAAAAAAAAAACRkaW5mAAAAHGRyZWYAAAAAAAAAAQAAAAx1cmwgAAAAAQAAAThzdGJsAAAAuHN0c2QAAAAAAAAAAQAAAKhhdmMxAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAABAAEABIAAAASAAAAAAAAAABFUxhdmM2MC4zMS4xMDIgbGlieDI2NAAAAAAAAAAAAAAAGP//AAAALmF2Y0MBQsAK/+EAFmdCwArZHsBEAAADAAQAAAMACDxImSABAAVoy4PLIAAAABBwYXNwAAAAAQAAAAEAAAAUYnRydAAAAAAAAApAAAAKQAAAABhzdHRzAAAAAAAAAAEAAAACAABAAAAAABRzdHNzAAAAAAAAAAEAAAABAAAAHHN0c2MAAAAAAAAAAQAAAAEAAAACAAAAAQAAABxzdHN6AAAAAAAAAAAAAAACAAAChgAAAAoAAAAUc3RjbwAAAAAAAAABAAADWwAAAGJ1ZHRhAAAAWm1ldGEAAAAAAAAAIWhkbHIAAAAAAAAAAG1kaXJhcHBsAAAAAAAAAAAAAAAALWlsc3QAAAAlqXRvbwAAAB1kYXRhAAAAAQAAAABMYXZmNjAuMTYuMTAwAAAACGZyZWUAAAKYbWRhdAAAAnAGBf//bNxF6b3m2Ui3lizYINkj7u94MjY0IC0gY29yZSAxNjQgcjMxMDggMzFlMTlmOSAtIEguMjY0L01QRUctNCBBVkMgY29kZWMgLSBDb3B5bGVmdCAyMDAzLTIwMjMgLSBodHRwOi8vd3d3LnZpZGVvbGFuLm9yZy94MjY0Lmh0bWwgLSBvcHRpb25zOiBjYWJhYz0wIHJlZj0zIGRlYmxvY2s9MTowOjAgYW5hbHlzZT0weDE6MHgxMTEgbWU9aGV4IHN1Ym1lPTcgcHN5PTEgcHN5X3JkPTEuMDA6MC4wMCBtaXhlZF9yZWY9MSBtZV9yYW5nZT0xNiBjaHJvbWFfbWU9MSB0cmVsbGlzPTEgOHg4ZGN0PTAgY3FtPTAgZGVhZHpvbmU9MjEsMTEgZmFzdF9wc2tpcD0xIGNocm9tYV9xcF9vZmZzZXQ9LTIgdGhyZWFkcz0xIGxvb2thaGVhZF90aHJlYWRzPTEgc2xpY2VkX3RocmVhZHM9MCBucj0wIGRlY2ltYXRlPTEgaW50ZXJsYWNlZD0wIGJsdXJheV9jb21wYXQ9MCBjb25zdHJhaW5lZF9pbnRyYT0wIGJmcmFtZXM9MCB3ZWlnaHRwPTAga2V5aW50PTI1MCBrZXlpbnRfbWluPTEgc2NlbmVjdXQ9NDAgaW50cmFfcmVmcmVzaD0wIHJjX2xvb2thaGVhZD00MCByYz1jcmYgbWJ0cmVlPTEgY3JmPTIzLjAgcWNvbXA9MC42MCBxcG1pbj0wIHFwbWF4PTY5IHFwc3RlcD00IGlwX3JhdGlvPTEuNDAgYXE9MToxLjAwAIAAAAAOZYiEBb///w9FAAFPf4AAAAAGQZo4CvqA';
+    document.body.appendChild(video);
+    return video;
+  }
+  async function acquire(){
+    if (!want || document.visibilityState !== 'visible') return;
+    if (native) {
+      if (lock) return;
+      try { lock = await navigator.wakeLock.request('screen'); lock.addEventListener('release', () => { lock = null; }); }
+      catch(e){ lock = null; }
+    } else {
+      try { await fallbackVideo().play(); } catch(e){}
+    }
+  }
+  async function release(){
+    if (lock) { try { await lock.release(); } catch(e){} lock = null; }
+    if (video) video.pause();
+  }
+  function paint(){
+    btn.setAttribute('aria-pressed', want);
+    const l = want ? 'Pantalla sempre encesa: activada' : 'Pantalla sempre encesa: desactivada';
+    btn.title = l; btn.setAttribute('aria-label', l);
+  }
+  btn.hidden = false; paint();
+  btn.addEventListener('click', e => {
+    e.stopPropagation(); want = !want; paint();
+    try { localStorage.setItem('wake', want ? '1' : '0'); } catch(err){}
+    want ? acquire() : release();
+  });
+  // el bloqueig es perd quan la pestanya s'amaga: el tornem a demanar en tornar
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') acquire(); });
+  addEventListener('pointerdown', acquire, { passive: true });   // Safari demana un gest de l'usuari
+  acquire();
+})();
+
+/* ---------- pantalla sempre encesa (sense salvapantalles ni repòs) ---------- */
+let wakeLock = null;
+async function keepAwake(){
+  if (!('wakeLock' in navigator) || document.hidden || wakeLock) return;
+  try {
+    wakeLock = await navigator.wakeLock.request('screen');
+    wakeLock.addEventListener('release', () => { wakeLock = null; });
+  } catch(e) { wakeLock = null; }
+}
+keepAwake();
+// alguns navegadors (Safari) només ho permeten després d'un toc o clic
+addEventListener('pointerdown', keepAwake, { passive: true });
+addEventListener('keydown', keepAwake);
+// el sistema allibera el bloqueig quan la pàgina queda amagada; el recuperem en tornar
+document.addEventListener('visibilitychange', () => { if (!document.hidden) keepAwake(); });
+
+/* ---------- aplicació instal·lable ---------- */
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+  addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const instBtn = document.getElementById('install'); let deferredPrompt = null;
+addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; instBtn.hidden = false; });
+instBtn.addEventListener('click', async e => {
+  e.stopPropagation(); if (!deferredPrompt) return;
+  deferredPrompt.prompt(); await deferredPrompt.userChoice.catch(()=>{}); deferredPrompt = null; instBtn.hidden = true;
+});
+addEventListener('appinstalled', () => { instBtn.hidden = true; });
+// iPhone/iPad amb Safari: no hi ha avís automàtic; ho expliquem una sola vegada
+(() => {
+  const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  let seen = false; try { seen = localStorage.getItem('iosTip') === '1'; } catch(e){}
+  if (!ios || standalone || seen) return;
+  const tip = document.getElementById('iosTip');
+  setTimeout(() => { tip.hidden = false; }, 4000);
+  const close = () => { tip.hidden = true; try { localStorage.setItem('iosTip','1'); } catch(e){} };
+  tip.querySelector('button').addEventListener('click', e => { e.stopPropagation(); close(); });
+  setTimeout(close, 16000);
+})();
 
 img.decode ? img.decode().catch(()=>{}).finally(()=>requestAnimationFrame(frame)) : (img.onload = () => requestAnimationFrame(frame));
 })();
