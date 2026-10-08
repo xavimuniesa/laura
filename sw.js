@@ -1,6 +1,6 @@
 /* Quinqué i pèndol · service worker
    Desa l'aplicació per funcionar sense connexió i s'actualitza sola en segon pla. */
-const CACHE = 'quinque-v5';
+const CACHE = 'quinque-v6';
 const CORE = ['./', './index.html', './manifest.webmanifest',
   './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './favicon-32.png'];
 
