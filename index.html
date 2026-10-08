@@ -329,9 +329,14 @@
   .clockCol{position:absolute;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:zoom-in;
     -webkit-tap-highlight-color:transparent;z-index:1}
   #clockBox,#fClockBox{position:relative;flex:none;margin:0;aspect-ratio:605/1690;
-    transition:transform .9s cubic-bezier(.3,.7,.2,1);will-change:transform}
+    transition:transform 1.5s cubic-bezier(.45,.05,.2,1);will-change:transform;transform-origin:49.6% 23.5%}
   .clockBox canvas{position:absolute;inset:0;width:100%;height:100%}
-  #pc,#fpc{filter:brightness(calc(1 - .94*var(--n,0))) blur(calc(2.2px*var(--n,0)))}
+  html.nf #pc,html.nf #fpc{filter:brightness(calc(1 - .94*var(--n,0))) blur(calc(2.2px*var(--n,0)))}
+  /* zoom harmoniós: l'entorn s'enfosqueix suaument mentre l'esfera s'apropa */
+  #clockCol::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 1.5s ease;
+    background:radial-gradient(ellipse 60% 60% at 50% 50%,rgba(0,0,0,0) 40%,rgba(0,0,0,.5) 100%)}
+  #clockCol.zoomed::after{opacity:1}
+  .clockCol.zoomed{cursor:zoom-out}
   .nightLayer{opacity:var(--n,0);pointer-events:none}
   #bnight{display:none!important}
   .face.back{background:#000}
@@ -403,8 +408,8 @@
 </main>
   <div id="fClockCol" class="clockCol" title="Toca el rellotge per apropar l'esfera · toca un pes per donar-li corda">
     <div id="fClockBox" class="clockBox">
-      <canvas id="fpc" width="605" height="1690" aria-label="Rellotge de paret de pèndol"></canvas>
-      <canvas id="fpcN" class="nightLayer" width="605" height="1690" aria-hidden="true"></canvas>
+      <canvas id="fpc" width="1210" height="3380" aria-label="Rellotge de paret de pèndol"></canvas>
+      <canvas id="fpcN" class="nightLayer" width="1210" height="3380" aria-hidden="true"></canvas>
     </div>
   </div>
   <div class="fshade"></div>
@@ -413,8 +418,8 @@
     <div id="patina"></div>
     <div id="clockCol" class="clockCol" title="Toca el rellotge per apropar l'esfera · toca un pes per donar-li corda">
       <div id="clockBox" class="clockBox">
-        <canvas id="pc" width="605" height="1690" aria-label="Rellotge de paret de pèndol amb pesos, esfera de llautó i xifres romanes. Toca'l per apropar l'esfera; toca un pes per donar-li corda."></canvas>
-        <canvas id="pcN" class="nightLayer" width="605" height="1690" aria-hidden="true"></canvas>
+        <canvas id="pc" width="1210" height="3380" aria-label="Rellotge de paret de pèndol amb pesos, esfera de llautó i xifres romanes. Toca'l per apropar l'esfera; toca un pes per donar-li corda."></canvas>
+        <canvas id="pcN" class="nightLayer" width="1210" height="3380" aria-hidden="true"></canvas>
       </div>
     </div>
 
@@ -842,6 +847,7 @@ function frame(t){
   }
   NIGHT = smooth(0.25, 0.85, D);
   document.body.classList.toggle('redn', NIGHT > 0.5);
+  document.documentElement.classList.toggle('nf', NIGHT > 0.002);
   nightBtnEl.setAttribute('aria-pressed', targetDarkness() > 0.5);
   document.body.classList.toggle('night', D > 0.5);
 
@@ -1112,6 +1118,7 @@ function chimesAllowed(d){
 
 /* ---------- dibuix del rellotge ---------- */
 const CW = 605, CH = 1690, OX = -166, OY = -10;   // llenç amb marge per a les ombres; foto → llenç: x-166, y-10
+const S = 2;                                       // resolució doble: l'esfera queda nítida en ampliar-la
 const pncv = document.getElementById('pcN'), pnctx = pncv.getContext('2d');
 const fpc = document.getElementById('fpc'), fpctx = fpc.getContext('2d');
 const fpcN = document.getElementById('fpcN'), fpnctx = fpcN.getContext('2d');
@@ -1126,9 +1133,9 @@ const MIN_HAND = [[-2.4,24],[-3.8,0],[-2.3,-122],[-5.6,-136],[0,-160],[5.6,-136]
 const HR_HAND  = [[-2.8,18],[-3.6,0],[-2.6,-46],[-8.5,-58],[-11.5,-72],[-8,-88],[0,-110],[8,-88],[11.5,-72],[8.5,-58],[2.6,-46],[3.6,0],[2.8,18]];
 function drawHand(ctx, pts, ang, w, red){
   ctx.save(); ctx.translate(DIAL.x, DIAL.y); ctx.rotate(ang);
-  if (red) { ctx.shadowColor = 'rgba(255,70,30,.85)'; ctx.shadowBlur = 9; poly(ctx, pts); ctx.fillStyle = RED; ctx.fill(); }
+  if (red) { ctx.shadowColor = 'rgba(255,70,30,.85)'; ctx.shadowBlur = 9*S; poly(ctx, pts); ctx.fillStyle = RED; ctx.fill(); }
   else {
-    ctx.shadowColor = 'rgba(25,12,0,0.5)'; ctx.shadowBlur = 5; ctx.shadowOffsetX = 3; ctx.shadowOffsetY = 5;
+    ctx.shadowColor = 'rgba(25,12,0,0.5)'; ctx.shadowBlur = 5*S; ctx.shadowOffsetX = 3*S; ctx.shadowOffsetY = 5*S;
     poly(ctx, pts); ctx.fillStyle = brassGrad(ctx, w); ctx.fill();
     ctx.shadowColor = 'transparent';
     ctx.lineWidth = 0.7; ctx.strokeStyle = 'rgba(70,45,12,0.75)'; ctx.stroke();
@@ -1137,8 +1144,8 @@ function drawHand(ctx, pts, ang, w, red){
 }
 function drawCap(ctx, red){
   ctx.save(); ctx.translate(DIAL.x, DIAL.y);
-  if (red) { ctx.shadowColor = 'rgba(255,70,30,.85)'; ctx.shadowBlur = 8; ctx.fillStyle = RED; ctx.beginPath(); ctx.arc(0,0,9,0,Math.PI*2); ctx.fill(); ctx.restore(); return; }
-  ctx.shadowColor = 'rgba(25,12,0,0.5)'; ctx.shadowBlur = 4; ctx.shadowOffsetX = 2; ctx.shadowOffsetY = 3;
+  if (red) { ctx.shadowColor = 'rgba(255,70,30,.85)'; ctx.shadowBlur = 8*S; ctx.fillStyle = RED; ctx.beginPath(); ctx.arc(0,0,9,0,Math.PI*2); ctx.fill(); ctx.restore(); return; }
+  ctx.shadowColor = 'rgba(25,12,0,0.5)'; ctx.shadowBlur = 4*S; ctx.shadowOffsetX = 2*S; ctx.shadowOffsetY = 3*S;
   let g = ctx.createRadialGradient(-4,-5,1, 0,0,12);
   g.addColorStop(0, '#fff3c8'); g.addColorStop(0.45, '#d8b56a'); g.addColorStop(1, '#6b4c1a');
   ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0,0,11.5,0,Math.PI*2); ctx.fill();
@@ -1151,7 +1158,7 @@ function drawPendulum(ctx, th){
   ctx.save();
   ctx.beginPath(); ctx.rect(330, 669, 280, 560); ctx.clip();
   ctx.save(); ctx.translate(PIV.x + 7, PIV.y + 5); ctx.rotate(th);
-  if ('filter' in ctx) ctx.filter = 'blur(4px)';
+  if ('filter' in ctx) ctx.filter = `blur(${4*S}px)`;
   ctx.fillStyle = 'rgba(15,6,0,0.42)';
   ctx.fillRect(-4, 90, 8, ROD_TIP - 90);
   ctx.beginPath(); ctx.arc(BOBO.x + 60.7, BOBO.y + 60.8, 58, 0, Math.PI*2); ctx.fill();
@@ -1165,91 +1172,97 @@ function drawPendulum(ctx, th){
 }
 
 /* ---------- base precalculada (caixa + ombra a la paret) i capa nocturna de les xifres ---------- */
-let baseCv = null, baseAlpha = null, numGlow = null;
+let baseCv = null, baseAlpha = null, numGlow = null, chainStrip = null, wBaked = {};
+const CS_PAD = 34, CS_H = 640;                     // tira de cadena llarga amb l'ombra ja feta
+function mk(w, h){ const c = document.createElement('canvas'); c.width = Math.ceil(w*S); c.height = Math.ceil(h*S); const x = c.getContext('2d'); x.scale(S,S); return [c, x]; }
 function buildStatics(){
-  if (baseCv || !clockImg.complete || !numImg.complete) return !!baseCv;
-  baseCv = document.createElement('canvas'); baseCv.width = CW; baseCv.height = CH;
-  const b = baseCv.getContext('2d');
-  b.shadowColor = 'rgba(0,0,0,.55)'; b.shadowBlur = 16; b.shadowOffsetX = 14; b.shadowOffsetY = 10;
+  if (baseCv) return true;
+  if (![clockImg, numImg, chainImg, wLImg, wRImg].every(i => i.complete && i.naturalWidth)) return false;
+  let b; [baseCv, b] = mk(CW, CH);
+  b.shadowColor = 'rgba(0,0,0,.55)'; b.shadowBlur = 16*S; b.shadowOffsetX = 14*S; b.shadowOffsetY = 10*S;
   b.drawImage(clockImg, 196 + OX, 20 + OY);
-  // alfa del rellotge per saber si un toc cau damunt seu
   const a = document.createElement('canvas'); a.width = CW; a.height = CH;
   const ac = a.getContext('2d'); ac.drawImage(clockImg, 196 + OX, 20 + OY);
   try { const d = ac.getImageData(0,0,CW,CH).data; baseAlpha = new Uint8Array(CW*CH); for (let i=0;i<CW*CH;i++) baseAlpha[i] = d[i*4+3]; } catch(e){}
-  // xifres, marques i ornaments en vermell ataronjat amb resplendor
-  const r = document.createElement('canvas'); r.width = CW; r.height = CH;
-  const rc = r.getContext('2d'); rc.fillStyle = RED; rc.fillRect(0,0,CW,CH);
+  const [r, rc] = mk(CW, CH); rc.fillStyle = RED; rc.fillRect(0,0,CW,CH);
   rc.globalCompositeOperation = 'destination-in'; rc.drawImage(numImg, 196 + OX, 20 + OY);
-  numGlow = document.createElement('canvas'); numGlow.width = CW; numGlow.height = CH;
-  const g = numGlow.getContext('2d'); g.shadowColor = 'rgba(255,70,30,.9)'; g.shadowBlur = 7; g.drawImage(r,0,0); g.shadowBlur = 0; g.drawImage(r,0,0);
+  let g; [numGlow, g] = mk(CW, CH); g.setTransform(1,0,0,1,0,0);
+  g.shadowColor = 'rgba(255,70,30,.9)'; g.shadowBlur = 7*S; g.drawImage(r,0,0); g.shadowBlur = 0; g.drawImage(r,0,0);
+  // cadena: una tira llarga de baules amb la seva ombra (s'hi llisca a sobre, sense redibuixar-la)
+  let cx; [chainStrip, cx] = mk(19 + CS_PAD, CS_H);
+  cx.shadowColor = 'rgba(12,5,0,.5)'; cx.shadowBlur = 7*S; cx.shadowOffsetX = 12*S; cx.shadowOffsetY = 6*S;
+  for (let y = CS_H - CHAIN_P; y > -CHAIN_P; y -= CHAIN_P) cx.drawImage(chainImg, 0, y);
+  // pesos amb ombra
+  [['L', wLImg], ['R', wRImg]].forEach(([k, im]) => {
+    const [c, x] = mk(im.width + 40, im.height + 30);
+    x.shadowColor = 'rgba(12,5,0,.5)'; x.shadowBlur = 12*S; x.shadowOffsetX = 16*S; x.shadowOffsetY = 9*S;
+    x.drawImage(im, 0, 0); wBaked[k] = c;
+  });
   return true;
 }
 
 /* ---------- pesos i cadenes ---------- */
 const TOP_Y = 700, TRAVEL = 494, CHAIN_TOP = 652, CHAIN_P = 25, RUN = 8*86400e3;   // corda de 8 dies
+// els dos pesos són contrapesos d'una mateixa cadena: quan un baixa, l'altre puja
 const WEIGHTS = [
-  { id:'strike', cx:388, ox:343, hookOff:8,  img: wLImg, ph: 1.9, f: 0.3, winding:false },   // esquerre: carilló
-  { id:'going',  cx:553, ox:513, hookOff:10, img: wRImg, ph: 0.4, f: 0.3, winding:false }    // dret: rellotge
+  { id:'L', cx:388, ox:343, hookOff:8,  ph: 1.9, f: 0.5 },
+  { id:'R', cx:553, ox:513, hookOff:10, ph: 0.4, f: 0.5 }
 ];
 const store = { get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch(e){} } };
-let windT = +store.get('wGoing') || (Date.now() - 2.5*86400e3);
-let strikeF = parseFloat(store.get('wStrike')); if (!(strikeF >= 0)) strikeF = 0.3;
-store.set('wGoing', windT); store.set('wStrike', strikeF);
-let strikeShown = strikeF;
-const NOTE_DROP = 1/9000;          // cada campanada fa baixar una mica el pes del carilló
-function strikeDescend(notes){ strikeF = Math.min(1, strikeF + notes*NOTE_DROP); store.set('wStrike', strikeF.toFixed(5)); }
+let P0 = parseFloat(store.get('wP')), T0 = +store.get('wT');
+if (!(P0 >= 0 && P0 <= 1) || !T0) { P0 = 0.3; T0 = Date.now(); }
+store.set('wP', P0); store.set('wT', T0);
+let P = P0, wind = null;          // P: posició del pes dret (0 = a dalt, 1 = a baix); l'esquerre és 1 − P
+const runP = () => Math.min(1, P0 + (Date.now() - T0)/RUN);    // amb el temps, el pes dret baixa i l'esquerre puja
+function strikeDescend(){}        // (mantingut per compatibilitat: ara tots dos pesos van lligats)
 function weightTop(W){ return TOP_Y + W.f*TRAVEL; }
 function drawWeight(ctx, W, t){
   const sy = weightTop(W), chainEnd = sy + W.hookOff, len = chainEnd - CHAIN_TOP;
-  // el pes oscil·la lleugerament per simpatia amb el pèndol
   const phi = 0.0024 * Math.sin(2*Math.PI*t/PEND_T + W.ph) * Math.min(1, len/480);
   ctx.save();
   ctx.translate(W.cx, CHAIN_TOP); ctx.rotate(phi); ctx.translate(-W.cx, -CHAIN_TOP);
-  ctx.shadowColor = 'rgba(12,5,0,.5)'; ctx.shadowBlur = 7; ctx.shadowOffsetX = 12; ctx.shadowOffsetY = 6;
-  if (chainImg.complete) {
-    ctx.save(); ctx.beginPath(); ctx.rect(W.cx - 9, CHAIN_TOP, 50, len + 14); ctx.clip();
-    for (let y = chainEnd - CHAIN_P; y > CHAIN_TOP - CHAIN_P; y -= CHAIN_P) ctx.drawImage(chainImg, W.cx - 9, y);
+  if (chainStrip) {
+    ctx.save(); ctx.beginPath(); ctx.rect(W.cx - 9, CHAIN_TOP, 19 + CS_PAD, len + 14); ctx.clip();
+    // les baules es mouen amb el pes: la tira queda ancorada al ganxo
+    ctx.drawImage(chainStrip, W.cx - 9, chainEnd - CS_H, 19 + CS_PAD, CS_H);
     ctx.restore();
   }
-  ctx.shadowBlur = 12; ctx.shadowOffsetX = 16; ctx.shadowOffsetY = 9;
-  if (W.img.complete) ctx.drawImage(W.img, W.ox, sy);
+  const wb = wBaked[W.id];
+  if (wb) ctx.drawImage(wb, W.ox, sy, wb.width/S, wb.height/S);
   ctx.restore();
 }
 function hitWeight(px, py){
   return WEIGHTS.find(W => { const sy = weightTop(W); return px > W.ox - 14 && px < W.ox + 98 && py > sy - 14 && py < sy + 470; });
 }
-// so de carraca: la roda dentada i el retén mentre es dona corda
+// carraca: el retén salta d'una dent a la següent a mesura que la roda gira
 function ratchetClick(last){
   if (!soundOn || !actx || actx.state !== 'running') return;
   ensureDry();
   const t = actx.currentTime + 0.002;
-  woodTick(t, Math.random() < .5, last ? .5 : .2, last ? .7 : 2.3 + Math.random()*.25);
+  woodTick(t, Math.random() < .5, last ? .45 : .16, last ? .7 : 2.4 + Math.random()*.2);
   const s = actx.createBufferSource(); s.buffer = noiseBuf;
-  const bp = actx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 3900 + Math.random()*500; bp.Q.value = 5;
-  const g = actx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(last ? .18 : .32, t + .0008);
-  g.gain.exponentialRampToValueAtTime(0.0001, t + .018);
+  const bp = actx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 3900 + Math.random()*400; bp.Q.value = 5;
+  const g = actx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(last ? .15 : .26, t + .0008);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + .016);
   s.connect(bp).connect(g).connect(dryBus); s.start(t); s.stop(t + .03);
 }
+const easeIO = x => x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3)/2;
 function startWind(W){
-  if (W.winding || W.f < 0.004) { if (!W.winding) ratchetClick(true); return; }
-  W.winding = true; W.tooth = Math.floor(W.f / 0.011);
+  if (wind) return;
+  const from = P, to = W.id === 'R' ? 0 : 1;          // el pes tocat puja fins a dalt; l'altre baixa
+  const dist = Math.abs(to - from);
+  if (dist < 0.004) { ratchetClick(true); return; }
+  wind = { from, to, t0: performance.now(), dur: 900 + 3600*dist, lastTooth: Math.round(from*TRAVEL/4) };
 }
-function updateWeights(dt){
-  WEIGHTS.forEach(W => {
-    if (W.winding) {
-      W.f = Math.max(0, W.f - dt*0.32);                 // ~3 s per pujar-lo de baix de tot
-      const tooth = Math.floor(W.f / 0.011);
-      if (tooth !== W.tooth) { W.tooth = tooth; ratchetClick(false); }
-      if (W.f === 0) {
-        W.winding = false; ratchetClick(true);
-        if (W.id === 'going') { windT = Date.now(); store.set('wGoing', windT); }
-        else { strikeF = strikeShown = 0; store.set('wStrike', 0); }
-      }
-      return;
-    }
-    if (W.id === 'going') W.f = Math.min(1, (Date.now() - windT)/RUN);
-    else { strikeShown += (strikeF - strikeShown) * Math.min(1, dt*0.6); W.f = strikeShown; }
-  });
+function updateWeights(){
+  if (wind) {
+    const x = Math.min(1, (performance.now() - wind.t0) / wind.dur);
+    P = wind.from + (wind.to - wind.from) * easeIO(x);
+    const tooth = Math.round(P*TRAVEL/4);              // un clic cada 4 px de cadena
+    if (tooth !== wind.lastTooth) { wind.lastTooth = tooth; ratchetClick(false); }
+    if (x >= 1) { P = P0 = wind.to; T0 = Date.now(); store.set('wP', P0); store.set('wT', T0); wind = null; ratchetClick(true); }
+  } else P = runP();
+  WEIGHTS[1].f = P; WEIGHTS[0].f = 1 - P;
 }
 
 /* ---------- zoom de l'esfera ---------- */
@@ -1260,13 +1273,14 @@ const views = [
 ];
 function applyZoom(v){
   const box = v.box, col = v.col;
-  if (!v.zoom || !col.offsetWidth) { box.style.transform = ''; box.style.transformOrigin = ''; return; }
+  col.classList.toggle('zoomed', v.zoom);
+  if (!v.zoom || !col.offsetWidth) { box.style.transform = ''; return; }
   const bw = box.offsetWidth, bh = box.offsetHeight, k = bh / CH;
   const dx = DIAL_CV.x * k, dy = DIAL_CV.y * k, dd = 2*DIAL_CV.r*k;
   const cw = col.clientWidth, chh = col.clientHeight;
   // al costat del quadre la columna és estreta: l'esfera ampliada pot sortir-ne cap al quadre
   const span = col.id === 'fClockCol' ? Math.min(chh, innerWidth*0.45) : Math.min(cw, chh);
-  const Z = span * 0.9 / dd;
+  const Z = span * 0.82 / dd;
   const tx = cw/2 - (box.offsetLeft + dx), ty = chh/2 - (box.offsetTop + dy);
   box.style.transformOrigin = `${dx}px ${dy}px`;
   box.style.transform = `translate(${tx.toFixed(1)}px,${ty.toFixed(1)}px) scale(${Z.toFixed(3)})`;
@@ -1298,9 +1312,9 @@ function backFrame(tNow){
   const th = -PEND_A * Math.cos(2*Math.PI*t/PEND_T);
   const sec = Math.floor(t);
   if (sec !== lastSign) { if (lastSign !== 0 && !flipping) pendTick(sec % 2 === 1); lastSign = sec; }
-  updateWeights(dt);
-  pctx.setTransform(1,0,0,1,0,0); pctx.clearRect(0,0,CW,CH);
-  if (buildStatics()) pctx.drawImage(baseCv, 0, 0);
+  updateWeights();
+  pctx.setTransform(S,0,0,S,0,0); pctx.clearRect(0,0,CW,CH);
+  if (buildStatics()) pctx.drawImage(baseCv, 0, 0, CW, CH);
   pctx.save(); pctx.translate(OX, OY);
   drawPendulum(pctx, th);
   WEIGHTS.forEach(W => drawWeight(pctx, W, t));
@@ -1309,17 +1323,17 @@ function backFrame(tNow){
   drawHand(pctx, HR_HAND, ha, 11.5); drawHand(pctx, MIN_HAND, ma, 5.6); drawCap(pctx);
   pctx.restore();
   // capa nocturna: només xifres, marques i agulles en vermell ataronjat
-  pnctx.setTransform(1,0,0,1,0,0); pnctx.clearRect(0,0,CW,CH);
+  pnctx.setTransform(S,0,0,S,0,0); pnctx.clearRect(0,0,CW,CH);
   if (NIGHT > 0.01) {
-    if (numGlow) pnctx.drawImage(numGlow, 0, 0);
+    if (numGlow) pnctx.drawImage(numGlow, 0, 0, CW, CH);
     pnctx.save(); pnctx.translate(OX, OY);
     drawHand(pnctx, HR_HAND, ha, 0, true); drawHand(pnctx, MIN_HAND, ma, 0, true); drawCap(pnctx, true);
     pnctx.restore();
   }
   // còpia per al rellotge del costat del quadre (escriptori)
   if (compMQ.matches && side !== 'back') {
-    fpctx.clearRect(0,0,CW,CH); fpctx.drawImage(pc, 0, 0);
-    fpnctx.clearRect(0,0,CW,CH); if (NIGHT > 0.01) fpnctx.drawImage(pncv, 0, 0);
+    fpctx.clearRect(0,0,fpc.width,fpc.height); fpctx.drawImage(pc, 0, 0);
+    fpnctx.clearRect(0,0,fpcN.width,fpcN.height); if (NIGHT > 0.01) fpnctx.drawImage(pncv, 0, 0);
   }
   // carilló als quarts
   const mm = now.getMinutes();
@@ -1329,7 +1343,7 @@ function backFrame(tNow){
       lastChimeKey = key;
       if (chimesAllowed(now)) {
         const q = mm === 0 ? 4 : mm/15, hrs = q === 4 ? (now.getHours()%12 || 12) : 0;
-        if (playChime(q, hrs)) strikeDescend(4*QUARTER_SETS[q].length + hrs);
+        playChime(q, hrs);
       }
     }
   }
