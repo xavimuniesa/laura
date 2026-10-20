@@ -148,7 +148,7 @@
   .tab{position:relative;display:flex;align-items:center;gap:12px;cursor:grab}
   .tab:active{cursor:grabbing}
   .grip{flex:none;border-radius:3px;background:rgba(70,45,15,.45);box-shadow:0 1px 0 rgba(255,240,205,.6)}
-  .sum{font-weight:700;font-size:19px;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sum{font-weight:700;font-size:19px;letter-spacing:.02em;white-space:nowrap;overflow:hidden;min-width:0}
   .sum .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 0 1px 6px;vertical-align:middle;
     box-shadow:inset 0 1px 1px rgba(0,0,0,.4),0 1px 0 rgba(255,240,205,.6)}
   .chev{flex:none;width:22px;height:22px;transition:transform .45s}
@@ -213,7 +213,8 @@
       transform:translateY(calc(100% - var(--peek)));display:flex;flex-direction:column}
     #drawer.open{transform:translateY(0)}
     #drawer{--peek:calc(62px + env(safe-area-inset-bottom))}
-    .tab{flex:none;height:var(--peek);padding:0 22px env(safe-area-inset-bottom) 76px}
+    .tab{flex:none;height:var(--peek);padding:0 18px env(safe-area-inset-bottom) 26px}
+    .sum{line-height:1.1}
     .grip{position:absolute;left:50%;top:8px;width:46px;height:5px;transform:translateX(-50%)}
     .sum{flex:1;font-size:18px;padding-top:6px}
     .chev{transform:rotate(0deg);margin-top:6px} #drawer.open .chev{transform:rotate(180deg)}
@@ -304,7 +305,8 @@
   .wd{font-size:27px} .mo{font-size:23px;font-weight:700}
   .row{font-size:22px;font-weight:700;margin-top:12px} .row svg{width:36px;height:36px}
   .small{font-size:20px;font-weight:400}
-  .place{font-size:33px} .sub{font-size:21px;font-weight:700}
+  .place{font-size:33px;overflow:hidden;overflow-wrap:anywhere;hyphens:auto} .sub{font-size:21px;font-weight:700;overflow:hidden}
+  .sec h3{overflow:hidden}
   .meta{font-size:21px;font-weight:700;gap:6px 20px} .cond{font-size:24px}
   .alerts{gap:10px}
   .al{font-size:20px;padding:10px 12px;gap:10px;border:2px solid rgba(240,200,120,.45);box-shadow:none}
@@ -983,6 +985,7 @@ function flip(){
     faceState(ang);
     if (p < 1) return requestAnimationFrame(step);
     side = toBack ? 'back' : 'front';
+    requestAnimationFrame(fitAll);
     rotor.style.transform = `rotateY(${side === 'back' ? 180 : 0}deg)`;
     faceState(side === 'back' ? 180 : 0);
     frontFace.setAttribute('aria-hidden', side === 'back');
@@ -1006,6 +1009,7 @@ function setDrawer(open){
   const d = open && !horiz();
   backFace.classList.toggle('dopen', d); document.body.classList.toggle('dopen', d);
   dTab.setAttribute('aria-expanded', open);
+  requestAnimationFrame(fitAll);
 }
 (() => {
   let start = null, moved = false;
@@ -1402,6 +1406,47 @@ function updSum(){
   const dots = Object.keys(cols).filter(k => $(k).classList.contains('on'))
     .map(k => `<i class="dot" style="background:${cols[k]}" title="${$(k).querySelector('b').textContent}"></i>`).join('');
   $('dSum').innerHTML = `${place}${temp && temp !== '—' ? ' · ' + temp : ''}${dots}`;
+  fitAll();
+}
+/* ---------- lletra adaptativa: el text es fa més petit fins que hi cap sencer ---------- */
+function fitText(el, max, min, wrapAtMin){
+  if (!el || !el.offsetParent) return;
+  el.style.whiteSpace = 'nowrap'; el.style.fontSize = max + 'px';
+  let s = max;
+  while (s > min && el.scrollWidth > el.clientWidth + 1) { s -= 1; el.style.fontSize = s + 'px'; }
+  // si ni a la mida mínima no hi cap, que passi a dues línies en lloc de tallar-se
+  if (wrapAtMin && el.scrollWidth > el.clientWidth + 1) el.style.whiteSpace = 'normal';
+}
+function fitAll(){
+  const small = innerHeight < 560 && innerWidth > innerHeight;
+  fitText($('dSum'), small ? 17 : 22, 17, true);
+  fitText($('wPlace'), small ? 26 : 33, 18, true);
+  fitText($('wSub'), small ? 17 : 21, 14, true);
+  document.querySelectorAll('.sec h3').forEach(h => fitText(h, small ? 15 : 17, 12, true));
+}
+addEventListener('resize', () => requestAnimationFrame(fitAll));
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll);
+
+/* ---------- nacions sense estat: es mostren en lloc de l'estat ---------- */
+const NATIONS = {
+  'ES-CT':'Catalunya', 'ES-VC':'País Valencià', 'ES-IB':'Illes Balears', 'ES-PV':'Euskadi', 'ES-NC':'Navarra', 'ES-GA':'Galícia',
+  'FR-66':'Catalunya Nord', 'FR-67':'Alsàcia', 'FR-68':'Alsàcia', 'FR-6AE':'Alsàcia',
+  'FR-BRE':'Bretanya', 'FR-44':'Bretanya', 'FR-COR':'Còrsega', 'FR-20R':'Còrsega', 'FR-2A':'Còrsega', 'FR-2B':'Còrsega',
+  'FR-OCC':'Occitània', 'FR-NAQ-PB':'Euskadi Nord',
+  'IT-88':'Sardenya', 'IT-BZ':'Tirol del Sud', 'IT-23':"Vall d'Aosta",
+  'GB-SCT':'Escòcia', 'GB-WLS':'Gal·les', 'GB-NIR':'Irlanda del Nord', 'GB-ENG':'Anglaterra',
+  'BE-VLG':'Flandes', 'BE-WAL':'Valònia', 'CA-QC':'Quebec', 'DK-FO':'Illes Fèroe'
+};
+function nationOf(g){
+  const admin = [...((g.localityInfo && g.localityInfo.administrative) || []), ...((g.localityInfo && g.localityInfo.informative) || [])];
+  const names = admin.map(a => (a.name || '') + ' ' + (a.description || '')).join(' | ');
+  // Iparralde (País Basc del Nord), dins dels Pirineus Atlàntics
+  if (/Pays Basque|Euskal Herri|Iparralde|Lapurdi|Labourd|Basse-Navarre|Soule/i.test(names)) return 'Euskadi Nord';
+  // primer el nivell més concret (departaments: Catalunya Nord, Alsàcia, Còrsega…), després la regió
+  const codes = admin.filter(a => a.isoCode).sort((a,b) => (b.adminLevel||b.order||0) - (a.adminLevel||a.order||0)).map(a => a.isoCode);
+  if (g.principalSubdivisionCode) codes.push(g.principalSubdivisionCode);
+  for (const c of codes) if (NATIONS[c]) return NATIONS[c];
+  return null;
 }
 function setAlert(id, on, txt){ const el = $(id); el.classList.toggle('on', on); el.querySelector('span').textContent = txt; }
 async function getJSON(url, ms){
@@ -1420,7 +1465,9 @@ async function refreshInfo(force){
   getJSON(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=ca`)
     .then(g => {
       $('wPlace').textContent = g.city || g.locality || g.principalSubdivision || 'Ubicació actual'; updSum();
-      $('wSub').textContent = [g.city && g.locality && g.locality !== g.city ? g.locality : null, g.principalSubdivision, g.countryName].filter(Boolean).join(' · ');
+      const nation = nationOf(g);
+      $('wSub').textContent = [g.city && g.locality && g.locality !== g.city ? g.locality : null, nation || g.countryName].filter(Boolean).join(' · ');
+      fitAll();
     })
     .catch(() => { if ($('wPlace').textContent === 'Localitzant…') $('wPlace').textContent = 'Ubicació actual'; });
   const q = `latitude=${lat}&longitude=${lon}&timezone=auto&forecast_days=2` +
