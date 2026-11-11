@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&display=swap" rel="stylesheet">
 <style>
-  :root{ --dim:1; --frameLit:1; }
+  :root{--nc:#ff5a2a; --dim:1; --frameLit:1; }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%;overflow:hidden;background:#171410}
   body{display:flex;align-items:center;justify-content:center;
@@ -378,14 +378,14 @@
   .sec h3{color:rgb(calc(242 + 13*var(--n,0)) calc(200 - 110*var(--n,0)) calc(121 - 79*var(--n,0)))}
   .upd{color:rgb(calc(242 + 13*var(--n,0)) calc(220 - 130*var(--n,0)) calc(176 - 134*var(--n,0)))}
   .al,.sec + .sec,#drawer::before,.grip{transition:background-color 2s,border-color 2s,color 2s}
-  body.redn .sec + .sec{border-top-color:rgba(255,90,42,.35)}
-  body.redn #drawer::before{border-color:rgba(255,90,42,.3)}
-  body.redn #drawer{box-shadow:0 0 0 1px rgba(255,90,42,.25)}
-  body.redn .grip{background:rgba(255,90,42,.5)}
+  body.redn .sec + .sec{border-top-color:color-mix(in srgb,var(--nc) 35%,transparent)}
+  body.redn #drawer::before{border-color:color-mix(in srgb,var(--nc) 30%,transparent)}
+  body.redn #drawer{box-shadow:0 0 0 1px color-mix(in srgb,var(--nc) 25%,transparent)}
+  body.redn .grip{background:color-mix(in srgb,var(--nc) 50%,transparent)}
   body.redn .rivet{filter:brightness(.2)}
-  body.redn .al{border-color:rgba(255,90,42,.45)}
-  body.redn .al.on{background:rgba(255,90,42,.18)!important;border-color:#ff5a2a;color:#ff5a2a;text-shadow:none}
-  body.redn .al.on svg *{stroke:#ff5a2a}
+  body.redn .al{border-color:color-mix(in srgb,var(--nc) 45%,transparent)}
+  body.redn .al.on{background:color-mix(in srgb,var(--nc) 18%,transparent)!important;border-color:var(--nc);color:var(--nc);text-shadow:none}
+  body.redn .al.on svg *{stroke:var(--nc)}
   body.redn #moonSvg{filter:grayscale(1) sepia(1) saturate(7) hue-rotate(-28deg) brightness(.9)}
   body.redn .fbtn{filter:brightness(.5) sepia(.7) saturate(2.5) hue-rotate(-20deg)}
   /* ======== bloc de fulls penjat (calendari, temps, notícies) ======== */
@@ -412,7 +412,7 @@
   .calPlate:hover,.calPlate:focus-visible{outline:none;box-shadow:inset 0 1px 0 rgba(255,248,220,.8),0 0 0 3px rgba(255,214,120,.55),0 0 18px rgba(255,200,110,.55)}
   .back.popen .calPlate,.back.zoomed .calPlate{opacity:0;pointer-events:none}
   @media (max-aspect-ratio: 1/1){ .calPlate{position:fixed;left:auto;right:max(12px,env(safe-area-inset-right));top:auto;bottom:calc(72px + env(safe-area-inset-bottom));font-size:13px} }
-  body.redn .calPlate{color:#ff5a2a;background:#1a0d06;text-shadow:0 0 6px rgba(255,90,42,.6);filter:none;box-shadow:0 0 0 1px rgba(255,90,42,.45)}
+  body.redn .calPlate{color:var(--nc);background:#1a0d06;text-shadow:0 0 6px color-mix(in srgb,var(--nc) 60%,transparent);filter:none;box-shadow:0 0 0 1px color-mix(in srgb,var(--nc) 45%,transparent)}
 
   #paper{--ink:#24160a;--soft:#5a3d15;--red:#a8231a;--line:#b48a45;--card:rgba(120,80,20,.08);
     position:absolute;z-index:6;display:flex;flex-direction:column;color:var(--ink);font-family:Georgia,"Times New Roman",serif;
@@ -510,16 +510,69 @@
     .pp-mname{font-size:24px}
   }
   /* nit: com l'esfera, tot vermell ataronjat sobre negre */
-  body.redn #paper{--ink:#ff5a2a;--soft:#e04a20;--red:#ff5a2a;--line:rgba(255,90,42,.55);
-    background:#070302;box-shadow:0 0 0 10px #1a0d06,0 0 0 12px rgba(255,90,42,.35),0 18px 40px rgba(0,0,0,.8)}
-  body.redn .pp-grid .d.fe{background:rgba(255,90,42,.25);color:#ff7a4a}
+  body.redn #paper{--ink:var(--nc);--soft:color-mix(in srgb,var(--nc) 85%,#000);--red:var(--nc);--line:color-mix(in srgb,var(--nc) 55%,transparent);
+    background:#070302;box-shadow:0 0 0 10px #1a0d06,0 0 0 12px color-mix(in srgb,var(--nc) 35%,transparent),0 18px 40px rgba(0,0,0,.8)}
+  body.redn .pp-grid .d.fe{background:color-mix(in srgb,var(--nc) 25%,transparent);color:var(--nc)}
   body.redn .pp-grid .d.td{background:transparent}
-  body.redn .pp-tabs button[aria-selected="true"]{color:#070302;background:#ff5a2a}
-  body.redn .pp-festa{background:rgba(255,90,42,.25);color:#ff7a4a}
-  body.redn #paper .al.on{background:rgba(255,90,42,.2)!important;color:#ff5a2a;border-color:#ff5a2a}
-  body.redn .pp-rings i,body.redn .pp-x{filter:brightness(.25) sepia(1) saturate(4) hue-rotate(-25deg)}
-  body.redn .pp-moon{filter:grayscale(1) sepia(1) saturate(7) hue-rotate(-28deg) brightness(.9)}
+  body.redn .pp-tabs button[aria-selected="true"]{color:#070302;background:var(--nc)}
+  body.redn .pp-festa{background:color-mix(in srgb,var(--nc) 25%,transparent);color:var(--nc)}
+  body.redn #paper .al.on{background:color-mix(in srgb,var(--nc) 20%,transparent)!important;color:var(--nc);border-color:var(--nc)}
+  body.redn .pp-rings i,body.redn .pp-x{filter:grayscale(1) brightness(.3)}
+  body.redn .pp-moon{filter:grayscale(1) brightness(.75)}
   @media (prefers-reduced-motion: reduce){ #drawer,#clockBox,#paper,.pp-track{transition:none} }
+  /* ===== ràdio i podcasts ===== */
+  .pp-sub{font-weight:400;letter-spacing:.02em;text-transform:none;font-size:15px}
+  .pp-radios{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .pp-ab{display:flex;align-items:center;gap:10px;text-align:left;padding:10px 12px;border-radius:8px;cursor:pointer;
+    border:2px solid var(--line);background:transparent;color:var(--ink);font:inherit;min-height:58px}
+  .pp-ab .nm{display:block;font-weight:700;font-size:19px;line-height:1.15}
+  .pp-ab .sb{display:block;font-size:15px;color:var(--soft)}
+  .pp-ab .dot{flex:none;width:14px;height:14px;border-radius:50%;border:2px solid var(--line)}
+  .pp-ab.on{background:var(--line);color:#fff8e6}
+  .pp-ab.on .sb{color:#fff3d6}
+  .pp-ab.on .dot{background:#fff8e6;border-color:#fff8e6;animation:soPulse 1.4s ease-in-out infinite}
+  .pp-ab.wait .dot{animation:soPulse .5s ease-in-out infinite}
+  @keyframes soPulse{50%{opacity:.25}}
+  .pp-pods{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+  .pp-pods .pp-ab{flex-direction:column;align-items:center;gap:2px;text-align:center;min-height:0;padding:8px 4px;position:relative;overflow:hidden}
+  .pp-pods .pp-ab .bar{position:absolute;left:0;bottom:0;height:4px;width:0;background:#fff8e6}
+  .pp-ptit{font-size:17px;margin-top:8px;color:var(--soft);line-height:1.3}
+  @media (max-aspect-ratio: 1/1){ .pp-radios{grid-template-columns:1fr} }
+
+  /* placa «ara sona» */
+  #sona{position:fixed;z-index:9;left:50%;top:max(10px,env(safe-area-inset-top));transform:translateX(-50%);display:flex;align-items:center;gap:8px;
+    max-width:min(92vw,520px);padding:6px 8px 6px 6px;border-radius:30px;color:#2b1a08;font:700 17px Georgia,serif;
+    background:linear-gradient(180deg,#f0dca2,#c9a457 60%,#a07a36);box-shadow:inset 0 1px 0 rgba(255,248,220,.8),0 4px 12px rgba(0,0,0,.5)}
+  #sona[hidden]{display:none}
+  #sona button{flex:none;border:0;cursor:pointer;color:#2b1a08;background:rgba(255,248,220,.45);border-radius:50%;width:40px;height:40px;display:grid;place-items:center;font:700 22px/1 Georgia}
+  #sona svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  #sona .so-pp svg{fill:currentColor;stroke:none}
+  #sona .so-t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;padding:0 4px}
+  #sona .so-tm{width:auto;min-width:40px;border-radius:20px;padding:0 9px;gap:3px;grid-auto-flow:column}
+  #sona .so-tm b{font-size:15px}
+  #sona .so-tm.on{background:#2b1a08;color:#f0dca2}
+  body.redn #sona{background:#0a0503;color:var(--nc);box-shadow:0 0 0 1px color-mix(in srgb,var(--nc) 45%,transparent)}
+  body.redn #sona button{background:color-mix(in srgb,var(--nc) 14%,transparent);color:var(--nc)}
+
+  /* ===== mode zz ===== */
+  #zzBtn{left:calc(max(14px,env(safe-area-inset-left)) + 162px);opacity:0;pointer-events:none}
+  body.back #zzBtn{opacity:1;pointer-events:auto}
+  #install{left:calc(max(14px,env(safe-area-inset-left)) + 216px)!important}
+  #zzBtn[aria-pressed="true"]{background:#0a0503;color:var(--nc);box-shadow:0 0 0 1px var(--nc),0 0 12px color-mix(in srgb,var(--nc) 50%,transparent)}
+  body.zz #patina{opacity:0!important}
+  body.zz .face.back{background:#000}
+  body.zz #pc{filter:brightness(.04) blur(3px)!important}
+  body.zz .nightLayer{opacity:var(--zzO)!important}
+  body.zz .fbtn:not(#zzBtn),body.zz #snd,body.zz #wake,body.zz #hint{opacity:.18!important}
+  body.zz #zzBtn{opacity:.55!important}
+  body.zz .back.zoomed:not(.popen) .calPlate{position:fixed;left:auto;top:auto;right:max(12px,env(safe-area-inset-right));bottom:calc(72px + env(safe-area-inset-bottom));
+    font-size:13px;opacity:.45;pointer-events:auto}
+  body.zz #paper.open{opacity:calc(.35 + .45*var(--zzK))}
+  body.popen #zzBtn{opacity:0!important;pointer-events:none!important}
+  #zzTip{position:fixed;z-index:9;left:50%;bottom:calc(76px + env(safe-area-inset-bottom));transform:translateX(-50%);width:max-content;max-width:90vw;
+    text-align:center;font:16px/1.35 Georgia,serif;color:var(--nc);background:rgba(0,0,0,.75);border:1px solid color-mix(in srgb,var(--nc) 40%,transparent);
+    padding:8px 14px;border-radius:14px;transition:opacity 1s}
+  #zzTip[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -565,6 +618,8 @@
         <button role="tab" data-pg="avui">Avui</button>
         <button role="tab" data-pg="temps">El temps</button>
         <button role="tab" data-pg="not">Notícies</button>
+        <button role="tab" data-pg="radio">Ràdio</button>
+        <button role="tab" data-pg="pod">Podcasts</button>
         <button role="tab" data-pg="lloc">On som</button>
       </div>
       <button class="pp-x" id="ppX" type="button" aria-label="Tanca">×</button>
@@ -617,6 +672,20 @@
           <div class="pp-foot" id="nPeu">&nbsp;</div>
         </section>
 
+        <section class="pp-pg" data-pg="radio">
+          <h4>Ràdio en directe</h4>
+          <div class="pp-radios" id="rLlista"></div>
+          <div class="pp-foot">Toca una emissora per escoltar-la; torna-la a tocar per fer pausa.</div>
+        </section>
+
+        <section class="pp-pg" data-pg="pod">
+          <h4>La Competència <span class="pp-sub">· RAC1, de dilluns a divendres</span></h4>
+          <div class="pp-pods" id="pComp"><p class="pp-p">Carregant…</p></div>
+          <div class="pp-ptit" id="pCompTit"></div>
+          <h4>Via lliure <span class="pp-sub">· RAC1, cap de setmana</span></h4>
+          <div class="pp-pods" id="pVia"><p class="pp-p">Carregant…</p></div>
+        </section>
+
         <section class="pp-pg" data-pg="lloc">
           <h4>On som</h4>
           <div class="pp-place" id="wPlace">Localitzant…</div>
@@ -644,6 +713,16 @@
 <button id="nightBtn" class="fbtn" aria-pressed="false" title="Nit / dia" aria-label="Canvia entre nit i dia">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path class="moon" d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/><g class="sun"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></g></svg>
 </button>
+<button id="zzBtn" class="fbtn" aria-pressed="false" title="Mode zz: rellotge de nit amb la pantalla encesa" aria-label="Mode zz">
+  <span style="font:700 17px/1 Georgia,serif;letter-spacing:.02em">zz</span>
+</button>
+<div id="sona" role="group" aria-label="Ara sona" hidden>
+  <button type="button" class="so-pp" id="soPP" aria-label="Pausa"></button>
+  <span class="so-t" id="soT"></span>
+  <button type="button" class="so-tm" id="soTm" aria-label="Temporitzador"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 2.5h5"/></svg><b id="soTmT"></b></button>
+  <button type="button" class="so-x" id="soX" aria-label="Atura">×</button>
+</div>
+<div id="zzTip" hidden>Doble toc a l'esfera: canvia el color · llisca a dreta o esquerra: més o menys llum · zz: surt</div>
 <button id="snd" aria-pressed="false" title="Tic-tac" aria-label="Activa o silencia el tic-tac">
   <svg class="off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>
   <svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 010 7M19 6a8.5 8.5 0 010 12"/></svg>
@@ -736,6 +815,7 @@ let D = autoDarkness();        // foscor mostrada 0..1
 let lamp = D > 0.3 ? 1 : 0;   // nivell del quinqué 0..1
 let ember = 0;                 // brasa de la metxa quan s'apaga
 function targetDarkness(){
+  if (typeof zzOn !== 'undefined' && zzOn) return 1;
   const a = autoDarkness(), autoNight = a > 0.5;
   if (override && override.auto !== autoNight) override = null;   // la natura torna a manar
   return override ? (override.night ? 1 : 0) : a;
@@ -1240,7 +1320,7 @@ const S = 2;                                       // resolució doble: l'esfera
 const pncv = document.getElementById('pcN'), pnctx = pncv.getContext('2d');
 const fpc = document.getElementById('fpc'), fpctx = fpc.getContext('2d');
 const fpcN = document.getElementById('fpcN'), fpnctx = fpcN.getContext('2d');
-const RED = '#ff5a2a';
+let RED = '#ff5a2a', RED_GLOW = 'rgba(255,70,30,.85)', NUM_COL = '#ff5a2a', numKey = '';
 function brassGrad(ctx, w){
   const g = ctx.createLinearGradient(-w, 0, w, 0);
   g.addColorStop(0, '#6e4f1c'); g.addColorStop(0.42, '#f6e2a2'); g.addColorStop(0.58, '#c9a457'); g.addColorStop(1, '#5e4216');
@@ -1251,7 +1331,7 @@ const MIN_HAND = [[-2.4,24],[-3.8,0],[-2.3,-122],[-5.6,-136],[0,-160],[5.6,-136]
 const HR_HAND  = [[-2.8,18],[-3.6,0],[-2.6,-46],[-8.5,-58],[-11.5,-72],[-8,-88],[0,-110],[8,-88],[11.5,-72],[8.5,-58],[2.6,-46],[3.6,0],[2.8,18]];
 function drawHand(ctx, pts, ang, w, red){
   ctx.save(); ctx.translate(DIAL.x, DIAL.y); ctx.rotate(ang);
-  if (red) { ctx.shadowColor = 'rgba(255,70,30,.85)'; ctx.shadowBlur = 9*S; poly(ctx, pts); ctx.fillStyle = RED; ctx.fill(); }
+  if (red) { ctx.shadowColor = RED_GLOW; ctx.shadowBlur = 9*S; poly(ctx, pts); ctx.fillStyle = RED; ctx.fill(); }
   else {
     ctx.shadowColor = 'rgba(25,12,0,0.5)'; ctx.shadowBlur = 5*S; ctx.shadowOffsetX = 3*S; ctx.shadowOffsetY = 5*S;
     poly(ctx, pts); ctx.fillStyle = brassGrad(ctx, w); ctx.fill();
@@ -1262,7 +1342,7 @@ function drawHand(ctx, pts, ang, w, red){
 }
 function drawCap(ctx, red){
   ctx.save(); ctx.translate(DIAL.x, DIAL.y);
-  if (red) { ctx.shadowColor = 'rgba(255,70,30,.85)'; ctx.shadowBlur = 8*S; ctx.fillStyle = RED; ctx.beginPath(); ctx.arc(0,0,9,0,Math.PI*2); ctx.fill(); ctx.restore(); return; }
+  if (red) { ctx.shadowColor = RED_GLOW; ctx.shadowBlur = 8*S; ctx.fillStyle = RED; ctx.beginPath(); ctx.arc(0,0,9,0,Math.PI*2); ctx.fill(); ctx.restore(); return; }
   ctx.shadowColor = 'rgba(25,12,0,0.5)'; ctx.shadowBlur = 4*S; ctx.shadowOffsetX = 2*S; ctx.shadowOffsetY = 3*S;
   let g = ctx.createRadialGradient(-4,-5,1, 0,0,12);
   g.addColorStop(0, '#fff3c8'); g.addColorStop(0.45, '#d8b56a'); g.addColorStop(1, '#6b4c1a');
@@ -1323,6 +1403,13 @@ function drawPendulum(ctx, th){
 let baseCv = null, baseAlpha = null, numGlow = null, chainStrip = null, wBaked = {};
 const CS_PAD = 34, CS_H = 640;                     // tira de cadena llarga amb l'ombra ja feta
 function mk(w, h){ const c = document.createElement('canvas'); c.width = Math.ceil(w*S); c.height = Math.ceil(h*S); const x = c.getContext('2d'); x.scale(S,S); return [c, x]; }
+function buildNum(){
+  if (!numImg.complete) return;
+  const [r, rc] = mk(CW, CH); rc.fillStyle = NUM_COL; rc.fillRect(0,0,CW,CH);
+  rc.globalCompositeOperation = 'destination-in'; rc.drawImage(numImg, 196 + OX, 20 + OY);
+  let g; [numGlow, g] = mk(CW, CH); g.setTransform(1,0,0,1,0,0);
+  g.shadowColor = hexA(NUM_COL, .9); g.shadowBlur = 7*S; g.drawImage(r,0,0); g.shadowBlur = 0; g.drawImage(r,0,0);
+}
 function buildStatics(){
   if (baseCv) return true;
   if (![clockImg, numImg, chainImg, wLImg, wRImg].every(i => i.complete && i.naturalWidth)) return false;
@@ -1332,10 +1419,7 @@ function buildStatics(){
   const a = document.createElement('canvas'); a.width = CW; a.height = CH;
   const ac = a.getContext('2d'); ac.drawImage(clockImg, 196 + OX, 20 + OY);
   try { const d = ac.getImageData(0,0,CW,CH).data; baseAlpha = new Uint8Array(CW*CH); for (let i=0;i<CW*CH;i++) baseAlpha[i] = d[i*4+3]; } catch(e){}
-  const [r, rc] = mk(CW, CH); rc.fillStyle = RED; rc.fillRect(0,0,CW,CH);
-  rc.globalCompositeOperation = 'destination-in'; rc.drawImage(numImg, 196 + OX, 20 + OY);
-  let g; [numGlow, g] = mk(CW, CH); g.setTransform(1,0,0,1,0,0);
-  g.shadowColor = 'rgba(255,70,30,.9)'; g.shadowBlur = 7*S; g.drawImage(r,0,0); g.shadowBlur = 0; g.drawImage(r,0,0);
+  buildNum();
   // cadena: una tira llarga de baules amb la seva ombra (s'hi llisca a sobre, sense redibuixar-la)
   let cx; [chainStrip, cx] = mk(19 + CS_PAD, CS_H);
   cx.shadowColor = 'rgba(12,5,0,.5)'; cx.shadowBlur = 7*S; cx.shadowOffsetX = 12*S; cx.shadowOffsetY = 6*S;
@@ -1423,7 +1507,7 @@ const views = [
 const shortLand = () => innerWidth > innerHeight && innerHeight < 600;
 function viewTransform(v){
   const box = v.box, col = v.col, bh = box.offsetHeight, k = bh / CH;
-  const cw = col.clientWidth, chh = col.clientHeight;
+  const cw = Math.min(col.clientWidth, innerWidth), chh = Math.min(col.clientHeight, innerHeight);
   if (v.zoom) {
     const dx = DIAL_CV.x * k, dy = DIAL_CV.y * k, dd = 2*DIAL_CV.r*k;
     const span = col.id === 'fClockCol' ? Math.min(chh, innerWidth*0.45) : Math.min(cw, chh);
@@ -1460,10 +1544,22 @@ function sizePlate(){
   calPlate.style.setProperty('--plx', left + 'px'); calPlate.style.setProperty('--ply', top + 'px');
   calPlate.style.setProperty('--cb', Math.min(box.offsetHeight*T.Z, innerHeight*1.4) + 'px');
 }
-addEventListener('resize', () => applyZoom(views[0])); setTimeout(() => applyZoom(views[0]), 50); setTimeout(() => applyZoom(views[0]), 1500);
+// iOS dona les mides noves amb retard quan es gira el telèfon: es recalcula quan canvien de debò
+let rzT = 0;
+function relayout(){
+  cancelAnimationFrame(rzT);
+  rzT = requestAnimationFrame(() => requestAnimationFrame(() => views.forEach(applyZoom)));
+}
+addEventListener('resize', relayout);
+addEventListener('orientationchange', () => [60, 250, 600, 1200].forEach(ms => setTimeout(relayout, ms)));
+if (window.visualViewport) visualViewport.addEventListener('resize', relayout);
+if (window.ResizeObserver) { const ro = new ResizeObserver(relayout); ro.observe(document.getElementById('clockCol')); ro.observe(document.getElementById('clockBox')); }
+document.addEventListener('visibilitychange', () => { if (!document.hidden) setTimeout(relayout, 300); });
+setTimeout(relayout, 50); setTimeout(relayout, 1500);
 views.forEach(v => v.col.addEventListener('click', e => {
   e.stopPropagation(); enableSound(true);
   if (v === views[0] && pOpen) { setPaper(false); return; }
+  if (v === views[0] && typeof zzOn !== 'undefined' && zzOn) return;
   const r = v.cv.getBoundingClientRect();
   const cx = (e.clientX - r.left) / r.width * CW, cy = (e.clientY - r.top) / r.height * CH;
   const px = cx - OX, py = cy - OY;
@@ -1501,6 +1597,7 @@ function backFrame(tNow){
   // capa nocturna: només xifres, marques i agulles en vermell ataronjat
   pnctx.setTransform(S,0,0,S,0,0); pnctx.clearRect(0,0,CW,CH);
   if (NIGHT > 0.01) {
+    if (!numGlow && baseCv) buildNum();
     if (numGlow) pnctx.drawImage(numGlow, 0, 0, CW, CH);
     pnctx.save(); pnctx.translate(OX, OY);
     drawHand(pnctx, HR_HAND, ha, 0, true); drawHand(pnctx, MIN_HAND, ma, 0, true); drawCap(pnctx, true);
@@ -1548,6 +1645,7 @@ function setPage(i, anim = true){
   document.querySelectorAll('#ppDots i').forEach((d, k) => d.classList.toggle('on', k === pIdx));
   const pg = PAGES[pIdx];
   if (pg === 'not') loadNews(false);
+  if (pg === 'pod') loadPods(false);
   if (pg === 'avui' || pg === 'cal') paintSaint(new Date());
 }
 function setPaper(open, page){
@@ -1556,7 +1654,7 @@ function setPaper(open, page){
   backFace.classList.toggle('popen', open); document.body.classList.toggle('popen', open);
   if (page) setPage(PAGES.indexOf(page), false);
   // només l'esfera: el rellotge s'apropa quan s'obre el full
-  const v = backView(); v.zoom = open;
+  const v = backView(); v.zoom = open || zzOn;
   requestAnimationFrame(() => applyZoom(v));
   if (open) { renderCal(); refreshInfo(false); if (PAGES[pIdx] === 'not') loadNews(false); paintSaint(new Date()); }
 }
@@ -1720,6 +1818,205 @@ function loadNews(force){
   }).then(() => { newsBusy = false; });
 }
 setInterval(() => { if (pOpen && PAGES[pIdx] === 'not') loadNews(false); }, 60e3);
+/* ---------- color nocturn (vermell de repòs) i mode zz ---------- */
+const ZZP = [['#ff5a2a','#ff5a2a'],['#7dff8f','#7dff8f'],['#82b6ff','#82b6ff'],['#ffa24c','#ffa24c'],['#ff5f7e','#ff5f7e'],['#ffe46b','#ffe46b'],
+  ['#66f4ff','#66f4ff'],['#7dff8f','#66f4ff'],['#66f4ff','#82b6ff'],['#ffa24c','#ff5f7e'],['#ffe46b','#ffa24c'],['#ff5f7e','#ffe46b']];
+let zzOn = false, zzI = 0, zzK = 1;
+try { zzI = Math.min(ZZP.length-1, Math.max(0, parseInt(localStorage.getItem('zzColor')) || 0));
+      zzK = Math.min(2, Math.max(.25, parseFloat(localStorage.getItem('zzLlum')) || 1)); } catch(e){}
+const hexA = (h, a) => { const n = parseInt(h.slice(1), 16); return `rgba(${n>>16},${n>>8&255},${n&255},${Math.max(0,Math.min(1,a)).toFixed(3)})`; };
+// colors en ús: agulles (H) i xifres (M)
+function nightCols(){ return zzOn ? ZZP[zzI] : ZZP[0]; }
+function applyNightCols(){
+  const [H, M] = nightCols(), st = document.documentElement.style;
+  st.setProperty('--nc', H); st.setProperty('--zzK', zzK.toFixed(2)); st.setProperty('--zzO', Math.min(1, .35 + .45*zzK).toFixed(2));
+  RED = H; RED_GLOW = hexA(H, .85 * (zzOn ? Math.min(1.4, zzK) : 1)); NUM_COL = M; numGlow = null; numKey = '';
+}
+const zzBtn = document.getElementById('zzBtn'), zzTip = document.getElementById('zzTip');
+let zzPrevZoom = false;
+function setZz(on){
+  zzOn = on; document.body.classList.toggle('zz', on); zzBtn.setAttribute('aria-pressed', on);
+  applyNightCols();
+  if (window.__wakeForce) window.__wakeForce(on);
+  const v = views[0];
+  if (on) {
+    if (side === 'front' && !flipping) flip();
+    zzPrevZoom = v.zoom; if (!pOpen) { v.zoom = true; applyZoom(v); }
+    zzTip.hidden = false; zzTip.style.opacity = 1;
+    clearTimeout(setZz.t); setZz.t = setTimeout(() => { zzTip.style.opacity = 0; setTimeout(() => zzTip.hidden = true, 1000); }, 7000);
+  } else {
+    zzTip.hidden = true;
+    if (!pOpen) { v.zoom = false; applyZoom(v); }
+  }
+}
+zzBtn.addEventListener('click', e => { e.stopPropagation(); enableSound(true); setZz(!zzOn); });
+// gestos en mode zz: doble toc = color, lliscar de costat = llum
+(() => {
+  const col = document.getElementById('clockCol'); let s = null, lastTap = 0;
+  col.addEventListener('pointerdown', e => { if (zzOn) s = { x: e.clientX, y: e.clientY, k: zzK }; }, true);
+  col.addEventListener('pointermove', e => {
+    if (!zzOn || !s) return; const dx = e.clientX - s.x;
+    if (Math.abs(dx) > 20 && Math.abs(dx) > Math.abs(e.clientY - s.y)) {
+      s.swiped = true; zzK = Math.min(2, Math.max(.25, s.k + dx/250)); applyNightCols();
+      try { localStorage.setItem('zzLlum', zzK.toFixed(2)); } catch(err){}
+    }
+  }, true);
+  col.addEventListener('pointerup', e => {
+    if (!zzOn || !s) return; const sw = s.swiped; s = null; if (sw) return;
+    const t = performance.now();
+    if (t - lastTap < 380) { zzI = (zzI + 1) % ZZP.length; applyNightCols(); try { localStorage.setItem('zzColor', zzI); } catch(err){} lastTap = 0; }
+    else lastTap = t;
+  }, true);
+})();
+
+/* ---------- reproductor de ràdio i podcasts ---------- */
+const player = new Audio(); player.preload = 'none';
+let sona = null;
+const sonaEl = document.getElementById('sona');
+const IC_PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z"/></svg>', IC_PAUSE = '<svg viewBox="0 0 24 24"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>';
+function paintAudio(){
+  const playing = !!(sona && !player.paused);
+  document.querySelectorAll('[data-aid]').forEach(b => {
+    const mine = !!(sona && b.dataset.aid === sona.id);
+    b.classList.toggle('on', mine); b.classList.toggle('wait', mine && playing && player.readyState < 3);
+    const bar = b.querySelector('.bar'); if (bar && !mine) bar.style.width = '0';
+  });
+  sonaEl.hidden = !sona;
+  if (sona) { $('soPP').innerHTML = playing ? IC_PAUSE : IC_PLAY; $('soPP').setAttribute('aria-label', playing ? 'Pausa' : 'Reprèn');
+    $('soT').textContent = sona.titol + (sona.sub ? ' · ' + sona.sub : ''); }
+  if ('mediaSession' in navigator) navigator.mediaSession.playbackState = sona ? (playing ? 'playing' : 'paused') : 'none';
+}
+let hls = null, hlsLib = null;
+const isHls = u => /\.m3u8(\?|$)/i.test(u || '');
+function stopHls(){ if (hls) { try { hls.destroy(); } catch(e){} hls = null; } }
+function loadHls(){
+  if (window.Hls) return Promise.resolve(window.Hls);
+  return hlsLib = hlsLib || new Promise((res, rej) => { const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js'; s.onload = () => window.Hls ? res(window.Hls) : rej(); s.onerror = () => { hlsLib = null; rej(); };
+    document.head.appendChild(s); });
+}
+const resolved = {}, RB = ['de1','nl1','at1','all'];
+function radioBrowser(rb, i = 0){
+  if (i >= RB.length) return Promise.reject();
+  return ambTemps(fetch(`https://${RB[i]}.api.radio-browser.info/json/stations/search?name=${encodeURIComponent(rb.name)}&countrycode=${rb.cc}&hidebroken=true&order=clickcount&reverse=true&limit=20`), 7000)
+    .then(r => r.json()).then(l => { const ok = l.filter(s => /^https:/i.test(s.url_resolved || ''));
+      const ex = ok.filter(s => (s.name || '').trim().toLowerCase() === rb.name.toLowerCase()), pool = ex.length ? ex : ok;
+      const best = pool.find(s => !isHls(s.url_resolved)) || pool[0]; if (!best) throw 0; return best.url_resolved; })
+    .catch(() => radioBrowser(rb, i + 1));
+}
+function start(item, url){
+  stopHls(); item.url = url; const n = item.n = (item.n || 0) + 1;
+  if (isHls(url) && !player.canPlayType('application/vnd.apple.mpegurl')) {
+    player.removeAttribute('src');
+    loadHls().then(Hls => { if (sona !== item || item.n !== n) return; if (!Hls.isSupported()) throw 0;
+      hls = new Hls(); hls.on(Hls.Events.ERROR, (ev, d) => { if (d && d.fatal && sona === item) fail(item); });
+      hls.loadSource(url); hls.attachMedia(player); player.play().catch(() => {}); }).catch(() => { if (sona === item) fail(item); });
+  } else { player.src = url; player.play().catch(() => {}); }
+  paintAudio();
+}
+function fail(item){
+  if (item.busy) return;
+  if (item.rb && !item.rbTried) { item.rbTried = item.busy = true;
+    radioBrowser(item.rb).then(u => { item.busy = false; if (sona !== item) return; if (u && u !== item.url) { resolved[item.id] = u; start(item, u); } else giveUp(item); })
+      .catch(() => { item.busy = false; if (sona === item) giveUp(item); }); return; }
+  giveUp(item);
+}
+function giveUp(item){
+  stop(); if (item.web && confirm(`No es pot escoltar ${item.titol} des d'aquí. Vols obrir-ne la web?`)) window.open(item.web, '_blank', 'noopener');
+}
+function play(item){
+  enableSound(true);
+  if (sona && sona.id === item.id) { player.paused ? player.play().catch(() => {}) : player.pause(); return; }
+  sona = item; const known = resolved[item.id] || item.audio;
+  if (known) start(item, known);
+  else if (item.rb) { item.rbTried = true; player.pause(); radioBrowser(item.rb).then(u => { if (sona !== item) return; resolved[item.id] = u; start(item, u); }).catch(() => { if (sona === item) giveUp(item); }); }
+  if ('mediaSession' in navigator && window.MediaMetadata) try { navigator.mediaSession.metadata = new MediaMetadata({ title: item.titol + (item.sub ? ' · ' + item.sub : ''), artist: item.radio ? 'En directe' : 'RAC1', album: 'Quinqué i pèndol', artwork: [{ src: 'apple-touch-icon.png', sizes: '180x180', type: 'image/png' }] }); } catch(e){}
+  paintAudio();
+}
+function stop(){
+  clearInterval(fade); clearTimer(); stopHls(); try { player.pause(); } catch(e){}
+  player.removeAttribute('src'); try { player.load(); } catch(e){} sona = null; paintAudio();
+}
+['play','playing','pause','waiting','canplay','ended'].forEach(ev => player.addEventListener(ev, paintAudio));
+player.addEventListener('error', () => { if (sona && !hls && player.getAttribute('src')) fail(sona); });
+player.addEventListener('ended', () => { if (sona && !sona.radio) stop(); });
+player.addEventListener('timeupdate', () => { if (!sona || sona.radio || !player.duration) return;
+  const b = document.querySelector(`[data-aid="${sona.id}"] .bar`); if (b) b.style.width = (player.currentTime/player.duration*100) + '%'; });
+$('soPP').addEventListener('click', e => { e.stopPropagation(); if (sona) player.paused ? player.play().catch(() => {}) : player.pause(); });
+$('soX').addEventListener('click', e => { e.stopPropagation(); stop(); });
+if ('mediaSession' in navigator) try { navigator.mediaSession.setActionHandler('play', () => player.play()); navigator.mediaSession.setActionHandler('pause', () => player.pause()); navigator.mediaSession.setActionHandler('stop', stop); } catch(e){}
+// temporitzador: s'apaga sola al cap de 15, 30, 45, 60 o 90 minuts, baixant el volum a poc a poc
+const TIMES = [0, 15, 30, 45, 60, 90]; let tEnd = 0, tStep = 0, tInt = null, fade = null;
+function paintTimer(){ const b = $('soTm'), m = tEnd ? Math.max(0, Math.ceil((tEnd - Date.now())/60000)) : 0;
+  b.classList.toggle('on', !!tEnd); $('soTmT').textContent = tEnd ? m + '′' : ''; b.title = tEnd ? `S'apagarà d'aquí a ${m} min` : 'Temporitzador'; }
+function clearTimer(){ tEnd = 0; tStep = 0; clearInterval(tInt); tInt = null; paintTimer(); }
+$('soTm').addEventListener('click', e => { e.stopPropagation(); tStep = (tStep + 1) % TIMES.length; const m = TIMES[tStep];
+  if (!m) { clearTimer(); return; } tEnd = Date.now() + m*60000; clearInterval(tInt);
+  tInt = setInterval(() => { if (!sona) return clearTimer(); if (Date.now() >= tEnd) { clearTimer();
+      let v = player.volume; const v0 = v; fade = setInterval(() => { v = Math.max(0, v - v0/32); try { player.volume = v; } catch(err){}
+        if (v <= 0 || (player.volume === v0 && v < v0*.9)) { clearInterval(fade); stop(); try { player.volume = 1; } catch(err){} } }, 250); }
+    else paintTimer(); }, 5000);
+  paintTimer(); });
+
+/* ---------- emissores ---------- */
+const RADIOS = [
+  { id:'rac1', nom:'RAC1', sub:'Generalista', audio:'https://playerservices.streamtheworld.com/api/livestream-redirect/RAC_1.mp3', web:'https://www.rac1.cat/', rb:{ name:'RAC1', cc:'ES' } },
+  { id:'catradio', nom:'Catalunya Ràdio', sub:'3Cat', audio:'https://shoutcast.ccma.cat/ccma/catalunyaradioHD.mp3', web:'https://www.3cat.cat/3cat/directes/catalunya-radio/', rb:{ name:'Catalunya Ràdio', cc:'ES' } },
+  { id:'catinfo', nom:'Catalunya Informació', sub:'Notícies · 3Cat', audio:'https://shoutcast.ccma.cat/ccma/catalunyainformacioHD.mp3', web:'https://www.3cat.cat/3cat/directes/catalunya-informacio/', rb:{ name:'Catalunya Informació', cc:'ES' } },
+  { id:'rac105', nom:'RAC105', sub:'Música', audio:'https://playerservices.streamtheworld.com/api/livestream-redirect/RAC105.mp3', web:'https://www.rac105.cat/', rb:{ name:'RAC105', cc:'ES' } },
+  { id:'catmusica', nom:'Catalunya Música', sub:'Clàssica · 3Cat', audio:'https://shoutcast.ccma.cat/ccma/catalunyamusicaHD.mp3', web:'https://www.3cat.cat/3cat/directes/catalunya-musica/', rb:{ name:'Catalunya Música', cc:'ES' } },
+  { id:'icat', nom:'iCat', sub:'Cultura · 3Cat', audio:'https://shoutcast.ccma.cat/ccma/icatHD.mp3', web:'https://www.3cat.cat/3cat/directes/icat/', rb:{ name:'iCat', cc:'ES' } },
+  { id:'clasica', nom:'Radio Clásica', sub:'Clàssica · RNE', audio:'https://rtvelivestream.rtve.es/rtvesec/rne/rne_r2_main.m3u8', web:'https://www.rtve.es/radio/radioclasica/', rb:{ name:'Radio Clásica', cc:'ES' } },
+  { id:'bbc', nom:'BBC World Service', sub:'Món · anglès', audio:'https://stream.live.vc.bbcmedia.co.uk/bbc_world_service', web:'https://www.bbc.com/audio', rb:{ name:'BBC World Service', cc:'GB' } }
+];
+$('rLlista').innerHTML = '';
+RADIOS.forEach(r => { const b = document.createElement('button'); b.type = 'button'; b.className = 'pp-ab'; b.dataset.aid = r.id;
+  b.innerHTML = '<span class="dot"></span><span><span class="nm"></span><span class="sb"></span></span>';
+  b.querySelector('.nm').textContent = r.nom; b.querySelector('.sb').textContent = r.sub;
+  b.addEventListener('click', e => { e.stopPropagation(); play({ id: r.id, titol: r.nom, sub: 'en directe', audio: r.audio, web: r.web, rb: r.rb, radio: true }); });
+  $('rLlista').appendChild(b); });
+
+/* ---------- podcasts: La Competència i Via lliure (RAC1) ---------- */
+const OMNY = '47dc05c7-7279-4c6f-9b31-ae74013297d9';
+const PROGS = { comp: { omny:'e38e0ded-b456-40ef-a8da-af1000eff5fc', apple:'330984064', n:25, web:'https://omny.fm/shows/la-competencia-programa-sencer' },
+                via:  { omny:'48f190bf-f9df-4d37-961b-af0300af6177', apple:'395147618', n:80, web:'https://omny.fm/shows/via-lliure-programa-sencer' } };
+const DOW = { Sun:0, Mon:1, Tue:2, Wed:3, Thu:4, Fri:5, Sat:6 }, DIES = ['diumenge','dilluns','dimarts','dimecres','dijous','divendres','dissabte'];
+const fmtMad = new Intl.DateTimeFormat('en-GB', { timeZone:'Europe/Madrid', weekday:'short', day:'numeric', month:'numeric', hour:'2-digit', hourCycle:'h23' });
+function mad(d){ const o = {}; fmtMad.formatToParts(d).forEach(p => o[p.type] = p.value); return { dow: DOW[o.weekday], dia: +o.day, mes: +o.month, hora: parseInt(o.hour, 10) % 24 }; }
+const clipsOmny = p => ambTemps(fetch(`https://api.omny.fm/orgs/${OMNY}/programs/${p.omny}/clips?pageSize=${p.n}`), 12000).then(r => { if (!r.ok) throw 0; return r.json(); })
+  .then(j => (j.Clips || []).map(c => ({ id: c.Id, titol: neteja(c.Title), data: new Date(c.PublishedUtc), audio: c.AudioUrl, web: c.PublishedUrl })));
+function clipsApple(p){ return new Promise((res, rej) => { const cb = '__qp' + Date.now() + Math.floor(Math.random()*1e5), s = document.createElement('script');
+  const t = setTimeout(() => { done(); rej(); }, 12000); function done(){ clearTimeout(t); try { delete window[cb]; } catch(e){} s.remove(); }
+  window[cb] = j => { done(); res((j.results || []).filter(r => r.wrapperType === 'podcastEpisode').map(r => ({ id: String(r.trackId), titol: neteja(r.trackName), data: new Date(r.releaseDate), audio: r.episodeUrl, web: r.trackViewUrl }))); };
+  s.onerror = () => { done(); rej(); }; s.src = `https://itunes.apple.com/lookup?id=${p.apple}&entity=podcastEpisode&limit=${p.n}&callback=${cb}`; document.head.appendChild(s); }); }
+const clips = p => clipsOmny(p).catch(() => clipsApple(p));
+function lastPerDay(list, days, hour){ const now = Date.now(), per = {};
+  list.forEach(c => { if (!c.audio || isNaN(c.data) || c.data > now) return; const m = mad(c.data);
+    if (!days.includes(m.dow) || (hour != null && m.hora !== hour)) return; if (!per[m.dow] || c.data > per[m.dow].data) { c.m = m; per[m.dow] = c; } });
+  return Object.values(per).sort((a, b) => a.data - b.data); }
+let podAt = 0, podBusy = false;
+function paintPods(box, list, prog, nom){
+  if (!list) { box.innerHTML = `<p class="pp-p">No s'han pogut carregar els programes. <a href="${prog.web}" target="_blank" rel="noopener">Obre la web</a></p>`; return; }
+  box.innerHTML = '';
+  list.forEach(c => { const b = document.createElement('button'); b.type = 'button'; b.className = 'pp-ab'; b.dataset.aid = c.id;
+    const dn = DIES[c.m.dow]; b.innerHTML = '<span class="nm"></span><span class="sb"></span><span class="bar"></span>';
+    b.querySelector('.nm').textContent = dn.charAt(0).toUpperCase() + dn.slice(1); b.querySelector('.sb').textContent = `${c.m.dia}/${c.m.mes}`;
+    b.title = c.titol || ''; b.setAttribute('aria-label', `${nom}, ${dn} ${c.m.dia}/${c.m.mes}`);
+    b.addEventListener('click', e => { e.stopPropagation(); play({ id: c.id, titol: nom, sub: `${dn} ${c.m.dia}/${c.m.mes}`, audio: c.audio, web: c.web });
+      if (nom === 'La Competència') $('pCompTit').textContent = c.titol || ''; });
+    box.appendChild(b); });
+  if (nom === 'La Competència' && list.length && !$('pCompTit').textContent) $('pCompTit').textContent = list[list.length-1].titol || '';
+  paintAudio();
+}
+function loadPods(force){
+  if (podBusy || (!force && Date.now() - podAt < 10*60e3)) return; podBusy = true;
+  Promise.all([
+    clips(PROGS.comp).then(l => lastPerDay(l, [1,2,3,4,5], null)).catch(() => null).then(l => paintPods($('pComp'), l && l.length ? l : null, PROGS.comp, 'La Competència')),
+    clips(PROGS.via).then(l => lastPerDay(l, [6,0], 7)).catch(() => null).then(l => paintPods($('pVia'), l && l.length ? l : null, PROGS.via, 'Via lliure'))
+  ]).then(() => { podAt = Date.now(); podBusy = false; });
+}
+
+applyNightCols();
 ppTrack.style.transform = 'translateX(0%)'; ppTabs[0].setAttribute('aria-selected', true); document.querySelector('#ppDots i').classList.add('on');
 
 /* ---------- previsió de 5 dies ---------- */
@@ -1910,7 +2207,7 @@ setInterval(() => {
 /* ---------- pantalla sempre encesa (evita el salvapantalles i el repòs de pantalla) ---------- */
 (() => {
   const btn = document.getElementById('wake');
-  let want = true, lock = null, video = null;
+  let want = true, lock = null, video = null, forced = false;
   try { want = localStorage.getItem('wake') !== '0'; } catch(e){}
   const native = 'wakeLock' in navigator;
   // alternativa per a navegadors antics (iOS < 16.4): un vídeo mut minúscul en bucle
@@ -1925,7 +2222,7 @@ setInterval(() => {
     return video;
   }
   async function acquire(){
-    if (!want || document.visibilityState !== 'visible') return;
+    if ((!want && !forced) || document.visibilityState !== 'visible') return;
     if (native) {
       if (lock) return;
       try { lock = await navigator.wakeLock.request('screen'); lock.addEventListener('release', () => { lock = null; }); }
@@ -1944,6 +2241,7 @@ setInterval(() => {
     btn.title = l; btn.setAttribute('aria-label', l);
   }
   btn.hidden = false; paint();
+  window.__wakeForce = on => { forced = on; (want || on) ? acquire() : release(); };
   btn.addEventListener('click', e => {
     e.stopPropagation(); want = !want; paint();
     try { localStorage.setItem('wake', want ? '1' : '0'); } catch(err){}
