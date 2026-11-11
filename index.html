@@ -388,7 +388,138 @@
   body.redn .al.on svg *{stroke:#ff5a2a}
   body.redn #moonSvg{filter:grayscale(1) sepia(1) saturate(7) hue-rotate(-28deg) brightness(.9)}
   body.redn .fbtn{filter:brightness(.5) sepia(.7) saturate(2.5) hue-rotate(-20deg)}
-  @media (prefers-reduced-motion: reduce){ #drawer,#clockBox{transition:none} }
+  /* ======== bloc de fulls penjat (calendari, temps, notícies) ======== */
+  #drawer{display:none!important}
+  @media (max-aspect-ratio: 1/1){
+    #clockCol{bottom:0!important}
+    body.back .fbtn, body.back #snd, body.back #wake{bottom:max(14px,env(safe-area-inset-bottom))!important}
+    body.back #hint{bottom:calc(66px + env(safe-area-inset-bottom))!important}
+  }
+  @media (min-aspect-ratio: 1/1){
+    #clockCol{right:0!important}
+    #clockBox{height:min(96vh,96svh)!important}
+  }
+  .calPlate{position:absolute;left:var(--plx,70%);top:var(--ply,45%);z-index:4;padding:.62em 1.25em .55em;border:0;border-radius:.35em;cursor:pointer;
+    font:700 calc(var(--cb,700px)*.022) Georgia,serif;letter-spacing:.2em;color:#2b1a08;white-space:nowrap;
+    background:repeating-linear-gradient(90deg,rgba(255,255,255,.06) 0 1px,transparent 1px 3px),
+      linear-gradient(180deg,#f0dca2 0%,#d2b064 25%,#b48a3e 58%,#cba659 80%,#8e6a2a 100%);
+    box-shadow:inset 0 1px 0 rgba(255,248,220,.8),inset 0 -1px 0 rgba(80,55,20,.6),.25em .45em .7em rgba(0,0,0,.55);
+    text-shadow:0 1px 0 rgba(255,244,210,.6);transition:opacity .6s,box-shadow .3s;filter:brightness(calc(1 - .55*var(--n,0)))}
+  .calPlate small{display:block;font-size:.66em;letter-spacing:.18em;font-weight:400;margin-top:.1em}
+  .calPlate::before,.calPlate::after{content:"";position:absolute;top:50%;width:.45em;height:.45em;margin-top:-.22em;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#fff1c4,#a07a36 55%,#5e4318)}
+  .calPlate::before{left:.4em}.calPlate::after{right:.4em}
+  .calPlate:hover,.calPlate:focus-visible{outline:none;box-shadow:inset 0 1px 0 rgba(255,248,220,.8),0 0 0 3px rgba(255,214,120,.55),0 0 18px rgba(255,200,110,.55)}
+  .back.popen .calPlate,.back.zoomed .calPlate{opacity:0;pointer-events:none}
+  @media (max-aspect-ratio: 1/1){ .calPlate{position:fixed;left:auto;right:max(12px,env(safe-area-inset-right));top:auto;bottom:calc(72px + env(safe-area-inset-bottom));font-size:13px} }
+  body.redn .calPlate{color:#ff5a2a;background:#1a0d06;text-shadow:0 0 6px rgba(255,90,42,.6);filter:none;box-shadow:0 0 0 1px rgba(255,90,42,.45)}
+
+  #paper{--ink:#24160a;--soft:#5a3d15;--red:#a8231a;--line:#b48a45;--card:rgba(120,80,20,.08);
+    position:absolute;z-index:6;display:flex;flex-direction:column;color:var(--ink);font-family:Georgia,"Times New Roman",serif;
+    background:linear-gradient(180deg,#fbf3df,#efe2c2);border-radius:5px;padding:18px 20px 12px;
+    box-shadow:0 0 0 10px #b48a45,0 0 0 12px #6b4c1c,0 18px 40px rgba(0,0,0,.6);
+    opacity:0;pointer-events:none;transform:translateY(-36px) rotate(-1.2deg);transform-origin:50% -30px;
+    transition:opacity .55s ease,transform .8s cubic-bezier(.2,1.25,.4,1),background 2s,color 2s}
+  #paper.open{opacity:1;pointer-events:auto;transform:none}
+  .pp-rings{position:absolute;top:-26px;left:12%;right:12%;display:flex;justify-content:space-between;pointer-events:none}
+  .pp-rings i{width:13px;height:36px;border-radius:7px;background:linear-gradient(90deg,#5d4316,#f3dfa6,#8d6a2c);box-shadow:0 2px 3px rgba(0,0,0,.5)}
+  .pp-tabs{display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-right:44px;padding-bottom:4px}
+  .pp-tabs::-webkit-scrollbar{display:none}
+  .pp-tabs button{flex:none;font:700 17px Georgia,serif;color:var(--soft);background:transparent;border:2px solid var(--line);
+    border-radius:8px 8px 3px 3px;padding:7px 12px;cursor:pointer}
+  .pp-tabs button[aria-selected="true"]{background:var(--line);color:#fff8e6;border-color:var(--line)}
+  .pp-x{position:absolute;right:12px;top:12px;width:40px;height:40px;border-radius:50%;border:0;cursor:pointer;font:700 24px/1 Georgia;color:#2b1a08;
+    background:radial-gradient(circle at 35% 30%,#f3dfa6,#c39a50 55%,#7a5622);box-shadow:0 3px 8px rgba(0,0,0,.35)}
+  .pp-view{flex:1;overflow:hidden;margin-top:10px;touch-action:pan-y;position:relative}
+  .pp-track{display:flex;height:100%;transition:transform .55s cubic-bezier(.25,.8,.3,1)}
+  .pp-track.drag{transition:none}
+  .pp-pg{flex:0 0 100%;height:100%;overflow-y:auto;overscroll-behavior:contain;padding:2px 4px 10px;scrollbar-width:thin}
+  .pp-dots{display:flex;justify-content:center;gap:8px;padding-top:8px}
+  .pp-dots i{width:9px;height:9px;border-radius:50%;background:var(--line);opacity:.35}
+  .pp-dots i.on{opacity:1}
+  #paper h4{font-size:16px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);margin:14px 0 6px}
+  .pp-rule{height:2px;background:var(--line);opacity:.55;margin:12px 0}
+  .pp-strong{font-weight:700;font-size:21px}
+  .pp-l{font-size:24px} .pp-l2{font-size:20px}
+  .pp-p{font-size:20px;line-height:1.35}
+  .pp-row{display:flex;align-items:center;gap:14px;margin-top:10px;font-size:19px;line-height:1.3}
+  .pp-moon,.pp-ic{flex:none;width:44px;height:44px}
+  .pp-mhead{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .pp-mname{font-size:34px;font-weight:700;color:var(--red)}
+  .pp-myear{font-size:22px;color:var(--soft)}
+  .pp-nav{width:42px;height:42px;border-radius:50%;border:2px solid var(--line);background:transparent;color:var(--soft);font:700 26px/1 Georgia;cursor:pointer}
+  .pp-grid{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;row-gap:3px;margin-top:8px}
+  .pp-grid .dw{font-size:16px;font-weight:700;color:var(--soft);padding:3px 0}
+  .pp-grid .d{font-size:clamp(19px,2.6vh,27px);font-weight:700;width:1.8em;height:1.8em;line-height:1.8em;border-radius:50%;margin:0 auto}
+  .pp-grid .d.su{color:var(--red)}
+  .pp-grid .d.fe{background:var(--red);color:#fff}
+  .pp-grid .d.td{box-shadow:0 0 0 3px var(--line);background:#fff3c8}
+  .pp-grid .d.fe.td{background:var(--red)}
+  .pp-legend{display:flex;gap:16px;flex-wrap:wrap;font-size:16px;margin-top:8px;color:var(--soft)}
+  .lg{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:5px}
+  .lg.fe{background:var(--red)} .lg.td{box-shadow:inset 0 0 0 3px var(--line)} .lg.su{border:2px solid var(--red)}
+  .pp-next{margin-top:10px;font-size:18px;color:var(--soft)}
+  .pp-today{display:flex;align-items:center;gap:16px}
+  .pp-bignum{font-size:84px;font-weight:700;line-height:.9;color:var(--red)}
+  .pp-festa[hidden]{display:none!important}
+  .pp-festa{margin-top:10px;font-size:20px;font-weight:700;color:#fff;background:var(--red);border-radius:6px;padding:6px 12px;display:inline-block}
+  .pp-bar{height:10px;border-radius:5px;background:rgba(120,80,20,.18);margin-top:6px;overflow:hidden}
+  .pp-bar i{display:block;height:100%;background:var(--line)}
+  .pp-now{display:flex;align-items:center;gap:18px;font-size:19px;line-height:1.35}
+  .pp-temp{font-size:68px;font-weight:700;line-height:1}
+  .pp-temp small{font-size:.42em;vertical-align:.95em}
+  .pp-alerts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  #paper .al{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;font-size:18px;line-height:1.15;
+    color:var(--ink);border:2px solid var(--line);background:transparent;box-shadow:none;text-shadow:none}
+  #paper .al svg{flex:none;width:28px;height:28px}
+  #paper .al svg *{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  #paper .al b{display:block;font-weight:700} #paper .al span{display:block;font-size:.95em}
+  #paper .al.on{color:#fff;border-color:transparent}
+  #paper .al.on.r{background:#a8231a} #paper .al.on.w{background:#9a560a} #paper .al.on.f{background:#52606b} #paper .al.on.s{background:#245a8e}
+  .pp-fc{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;text-align:center}
+  .pp-fc div{border:2px solid var(--line);border-radius:6px;padding:6px 2px}
+  .pp-fc b{display:block;font-size:17px;color:var(--soft)}
+  .pp-fc svg{width:32px;height:32px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .pp-fc .mx{display:block;font-size:22px;font-weight:700} .pp-fc .mn{display:block;font-size:17px}
+  .pp-foot{margin-top:10px;font-size:16px;color:var(--soft)}
+  .pp-news a{display:flex;gap:10px;padding:10px 2px;border-bottom:1px solid rgba(180,138,69,.5);color:inherit;text-decoration:none;font-size:19px;line-height:1.3}
+  .pp-news a b{flex:none;width:1.6em;color:var(--red)}
+  .pp-place{font-size:34px;font-weight:700;line-height:1.1;overflow-wrap:anywhere}
+  .pp-kv{display:flex;justify-content:space-between;gap:10px;font-size:20px;padding:6px 0}
+  .pp-kv span{color:var(--soft)}
+
+  /* posició: horitzontal → full a la dreta; vertical → full sota l'esfera */
+  @media (min-aspect-ratio: 1/1){
+    #paper{right:max(3vw,env(safe-area-inset-right));top:calc(5vh + 20px);bottom:5vh;width:min(560px,48vw)}
+    .back.popen #clockCol{right:calc(min(560px,48vw) + 4vw)!important}
+  }
+  @media (max-aspect-ratio: 1/1){
+    #paper{left:max(14px,env(safe-area-inset-left));right:max(14px,env(safe-area-inset-right));top:calc(36vh + 22px);top:calc(36svh + 22px);
+      bottom:max(12px,env(safe-area-inset-bottom));padding:16px 14px 10px}
+    .back.popen #clockCol{bottom:auto!important;height:36vh;height:36svh}
+    .back.popen .fbtn,.back.popen #snd,.back.popen #wake,.back.popen #hint{opacity:0;pointer-events:none}
+    body.back.popen .fbtn,body.back.popen #snd,body.back.popen #wake,body.back.popen #hint{opacity:0!important;pointer-events:none!important}
+    .pp-tabs button{font-size:16px;padding:7px 10px}
+    .pp-mname{font-size:30px}
+    .pp-alerts{grid-template-columns:1fr}
+  }
+  @media (min-aspect-ratio: 1/1) and (max-height:560px){
+    #paper{top:22px;bottom:8px;padding:12px 16px 6px}
+    .pp-rings{display:none}
+    .pp-grid .d{font-size:17px}
+    .pp-mname{font-size:24px}
+  }
+  /* nit: com l'esfera, tot vermell ataronjat sobre negre */
+  body.redn #paper{--ink:#ff5a2a;--soft:#e04a20;--red:#ff5a2a;--line:rgba(255,90,42,.55);
+    background:#070302;box-shadow:0 0 0 10px #1a0d06,0 0 0 12px rgba(255,90,42,.35),0 18px 40px rgba(0,0,0,.8)}
+  body.redn .pp-grid .d.fe{background:rgba(255,90,42,.25);color:#ff7a4a}
+  body.redn .pp-grid .d.td{background:transparent}
+  body.redn .pp-tabs button[aria-selected="true"]{color:#070302;background:#ff5a2a}
+  body.redn .pp-festa{background:rgba(255,90,42,.25);color:#ff7a4a}
+  body.redn #paper .al.on{background:rgba(255,90,42,.2)!important;color:#ff5a2a;border-color:#ff5a2a}
+  body.redn .pp-rings i,body.redn .pp-x{filter:brightness(.25) sepia(1) saturate(4) hue-rotate(-25deg)}
+  body.redn .pp-moon{filter:grayscale(1) sepia(1) saturate(7) hue-rotate(-28deg) brightness(.9)}
+  @media (prefers-reduced-motion: reduce){ #drawer,#clockBox,#paper,.pp-track{transition:none} }
 </style>
 </head>
 <body>
@@ -422,47 +553,83 @@
       <div id="clockBox" class="clockBox">
         <canvas id="pc" width="1210" height="3380" aria-label="Rellotge de paret de pèndol amb pesos, esfera de llautó i xifres romanes. Toca'l per apropar l'esfera; toca un pes per donar-li corda."></canvas>
         <canvas id="pcN" class="nightLayer" width="1210" height="3380" aria-hidden="true"></canvas>
-      </div>
+          </div>
     </div>
 
-    <aside id="drawer" aria-label="Dades: calendari, lloc i temps">
-      <i class="rivet a"></i><i class="rivet b"></i>
-      <div class="tab" id="dTab" role="button" tabindex="0" aria-expanded="false" aria-controls="dBody" title="Llisca per veure les dades">
-        <span class="grip"></span>
-        <div class="sum eng" id="dSum">Dades</div>
-        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>
+
+    <button id="calPlate" class="calPlate" type="button" aria-haspopup="dialog" aria-controls="paper" title="Calendari, temps i notícies">CALENDARI<small>toca'm</small></button>
+    <div id="paper" role="dialog" aria-modal="false" aria-label="Calendari, temps i notícies" aria-hidden="true">
+      <div class="pp-rings" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="pp-tabs" role="tablist" id="ppTabs">
+        <button role="tab" data-pg="cal">Calendari</button>
+        <button role="tab" data-pg="avui">Avui</button>
+        <button role="tab" data-pg="temps">El temps</button>
+        <button role="tab" data-pg="not">Notícies</button>
+        <button role="tab" data-pg="lloc">On som</button>
       </div>
-      <div class="dbody" id="dBody">
-        <section class="sec">
-          <h3 class="eng">Temps ara</h3>
-          <div class="bigline eng"><span class="temp" id="wTemp">—</span><span class="cond" id="wCond">&nbsp;</span></div>
-          <div class="meta eng"><span id="wFeel"></span><span id="wHum"></span><span id="wWind"></span></div>
+      <button class="pp-x" id="ppX" type="button" aria-label="Tanca">×</button>
+      <div class="pp-view" id="ppView"><div class="pp-track" id="ppTrack">
+
+        <section class="pp-pg" data-pg="cal">
+          <div class="pp-mhead"><button class="pp-nav" id="calPrev" aria-label="Mes anterior">‹</button>
+            <div><span class="pp-mname" id="calMes">—</span> <span class="pp-myear" id="calAny"></span></div>
+            <button class="pp-nav" id="calNext" aria-label="Mes següent">›</button></div>
+          <div class="pp-grid" id="calGrid"></div>
+          <div class="pp-legend"><span><i class="lg fe"></i>Festiu</span><span><i class="lg td"></i>Avui</span><span><i class="lg su"></i>Diumenge</span></div>
+          <div class="pp-rule"></div>
+          <div class="pp-row"><svg viewBox="-16 -16 32 32" id="moonSvg" class="pp-moon" aria-hidden="true"></svg>
+            <div><div class="pp-strong"><span id="cWd">—</span> <span id="cDn">—</span> <span id="cMo" hidden></span></div>
+              <div><span id="mName">—</span> · <span id="mIll"></span></div></div></div>
+          <div class="pp-row"><svg viewBox="0 0 32 32" class="pp-ic" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 23h24"/><path d="M9 23a7 7 0 0114 0"/><path d="M16 7v4M7.5 12l2.5 2.5M24.5 12L22 14.5M3.5 18.5h3M25.5 18.5h3"/></g></svg>
+            <div><div class="pp-strong"><span id="sRise">—</span> · <span id="sSet">—</span></div><div id="sLen"></div></div></div>
+          <div class="pp-next" id="calNextFest"></div>
         </section>
-        <section class="sec">
-          <h3 class="eng">Avisos · properes 12 h</h3>
-          <div class="alerts">
-            <div class="al eng r" id="aRain"><svg viewBox="0 0 26 26"><path d="M7 15a5 5 0 01.6-10 6.5 6.5 0 0112.3 2.2A4 4 0 0119 15z"/><path d="M9 18l-1.5 3M14 18l-1.5 3M19 18l-1.5 3"/></svg><div><b>Pluja</b><span>—</span></div></div>
-            <div class="al eng w" id="aWind"><svg viewBox="0 0 26 26"><path d="M3 9h13a3 3 0 10-3-3"/><path d="M3 14h18a3 3 0 11-3 3"/><path d="M3 19h8"/></svg><div><b>Vent</b><span>—</span></div></div>
-            <div class="al eng f" id="aFog"><svg viewBox="0 0 26 26"><path d="M4 8h18M2 12h22M5 16h16M3 20h20"/></svg><div><b>Boira</b><span>—</span></div></div>
-            <div class="al eng s" id="aSnow"><svg viewBox="0 0 26 26"><path d="M13 3v20M4.3 8l17.4 10M4.3 18L21.7 8"/><path d="M10.5 4.5L13 7l2.5-2.5M10.5 21.5L13 19l2.5 2.5"/></svg><div><b>Neu</b><span>—</span></div></div>
+
+        <section class="pp-pg" data-pg="avui">
+          <div class="pp-today"><span class="pp-bignum" id="aNum">—</span><div><div class="pp-strong pp-l" id="aWd">—</div><div class="pp-l2" id="aMy">—</div></div></div>
+          <div class="pp-festa" id="aFesta" hidden></div>
+          <div class="pp-rule"></div>
+          <h4>Sant del dia</h4><p class="pp-p" id="aSant">—</p>
+          <h4 id="aEfemH">Tal dia com avui</h4><p class="pp-p" id="aEfem">Carregant…</p>
+          <div class="pp-rule"></div>
+          <p class="pp-p" id="aDoy"></p>
+          <div class="pp-bar"><i id="aDoyBar"></i></div>
+        </section>
+
+        <section class="pp-pg" data-pg="temps">
+          <div class="pp-now"><span class="pp-temp" id="wTemp">—</span><div><div class="pp-strong pp-l" id="wCond">&nbsp;</div>
+            <div id="wFeel"></div><div id="wHum"></div><div id="wWind"></div></div></div>
+          <h4>Avisos · properes 12 hores</h4>
+          <div class="pp-alerts">
+            <div class="al r" id="aRain"><svg viewBox="0 0 26 26"><path d="M7 15a5 5 0 01.6-10 6.5 6.5 0 0112.3 2.2A4 4 0 0119 15z"/><path d="M9 18l-1.5 3M14 18l-1.5 3M19 18l-1.5 3"/></svg><div><b>Pluja</b><span>—</span></div></div>
+            <div class="al w" id="aWind"><svg viewBox="0 0 26 26"><path d="M3 9h13a3 3 0 10-3-3"/><path d="M3 14h18a3 3 0 11-3 3"/><path d="M3 19h8"/></svg><div><b>Vent</b><span>—</span></div></div>
+            <div class="al f" id="aFog"><svg viewBox="0 0 26 26"><path d="M4 8h18M2 12h22M5 16h16M3 20h20"/></svg><div><b>Boira</b><span>—</span></div></div>
+            <div class="al s" id="aSnow"><svg viewBox="0 0 26 26"><path d="M13 3v20M4.3 8l17.4 10M4.3 18L21.7 8"/><path d="M10.5 4.5L13 7l2.5-2.5M10.5 21.5L13 19l2.5 2.5"/></svg><div><b>Neu</b><span>—</span></div></div>
           </div>
-          <div class="upd eng" id="wUpd">&nbsp;</div>
+          <h4>Propers 5 dies</h4>
+          <div class="pp-fc" id="wFc"></div>
+          <div class="pp-foot" id="wUpd">&nbsp;</div>
         </section>
-        <section class="sec">
-          <h3 class="eng">Lloc</h3>
-          <div class="place eng" id="wPlace">Localitzant…</div>
-          <div class="sub eng" id="wSub">&nbsp;</div>
-          <div class="meta eng"><span id="wAlt">Altitud —</span><span id="wCoord"></span></div>
+
+        <section class="pp-pg" data-pg="not">
+          <h4>Notícies</h4>
+          <div class="pp-news" id="nLlista"><p class="pp-p">Carregant…</p></div>
+          <div class="pp-foot" id="nPeu">&nbsp;</div>
         </section>
-        <section class="sec">
-          <h3 class="eng">Calendari</h3>
-          <div class="bigline eng"><span class="dn" id="cDn">—</span><span><span class="wd" id="cWd">—</span><br><span class="mo" id="cMo">—</span></span></div>
-          <div class="row eng"><svg viewBox="-16 -16 32 32" id="moonSvg" aria-hidden="true"></svg><div><div id="mName">—</div><div class="small" id="mIll"></div></div></div>
-          <div class="row eng"><svg viewBox="0 0 32 32" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 23h24"/><path d="M9 23a7 7 0 0114 0"/><path d="M16 7v4M7.5 12l2.5 2.5M24.5 12L22 14.5M3.5 18.5h3M25.5 18.5h3"/></g></svg>
-            <div><div><span id="sRise">—</span> · <span id="sSet">—</span></div><div class="small" id="sLen"></div></div></div>
+
+        <section class="pp-pg" data-pg="lloc">
+          <h4>On som</h4>
+          <div class="pp-place" id="wPlace">Localitzant…</div>
+          <div class="pp-l2" id="wSub">&nbsp;</div>
+          <div class="pp-rule"></div>
+          <div class="pp-kv"><span>Altitud</span><b id="wAlt">—</b></div>
+          <div class="pp-kv"><span>Coordenades</span><b id="wCoord">—</b></div>
+          <span id="dSum" hidden></span>
         </section>
-      </div>
-    </aside>
+
+      </div></div>
+      <div class="pp-dots" id="ppDots" aria-hidden="true"></div>
+    </div>
     <div id="bnight" aria-hidden="true"></div>
     <div class="fshade"></div>
   </section>
@@ -999,59 +1166,6 @@ function flip(){
 }
 flipBtn.addEventListener('click', e => { e.stopPropagation(); flip(); });
 
-/* ---------- placa lliscant ---------- */
-const drawer = document.getElementById('drawer'), dTab = document.getElementById('dTab');
-let dOpen = false;
-const horiz = () => innerWidth >= innerHeight;
-function setDrawer(open){
-  dOpen = open;
-  drawer.classList.toggle('open', open); drawer.style.transform = '';
-  const d = open && !horiz();
-  backFace.classList.toggle('dopen', d); document.body.classList.toggle('dopen', d);
-  dTab.setAttribute('aria-expanded', open);
-  requestAnimationFrame(fitAll);
-}
-(() => {
-  let start = null, moved = false;
-  const size = () => horiz() ? drawer.offsetWidth : drawer.offsetHeight;
-  const peekPx = () => horiz() ? dTab.offsetWidth : dTab.offsetHeight;
-  function down(e){
-    if (e.button > 0) return;
-    const onTab = dTab.contains(e.target);
-    if (!onTab && !dOpen) return;
-    if (!onTab && document.getElementById('dBody').scrollTop > 0 && !horiz()) return;   // deixa fer scroll dins la placa
-    start = { x: e.clientX, y: e.clientY, t: performance.now(), base: dOpen ? 0 : size() - peekPx(), onTab };
-    moved = false; drawer.setPointerCapture(e.pointerId);
-  }
-  function move(e){
-    if (!start) return;
-    const d = horiz() ? e.clientX - start.x : e.clientY - start.y;
-    if (!moved && Math.abs(d) < 6) return;
-    moved = true; drawer.classList.add('drag');
-    const pos = Math.max(0, Math.min(size() - peekPx(), start.base + d));
-    drawer.style.transform = horiz() ? `translate(${pos}px,-50%)` : `translateY(${pos}px)`;
-    start.pos = pos; start.v = d / Math.max(1, performance.now() - start.t);
-  }
-  function up(e){
-    if (!start) return;
-    drawer.classList.remove('drag');
-    if (!moved) { if (start.onTab) setDrawer(!dOpen); }
-    else {
-      const frac = start.pos / (size() - peekPx());
-      const fast = Math.abs(start.v) > 0.5;
-      setDrawer(fast ? start.v < 0 : frac < 0.5);
-    }
-    start = null;
-  }
-  drawer.addEventListener('pointerdown', down);
-  drawer.addEventListener('pointermove', move);
-  drawer.addEventListener('pointerup', up);
-  drawer.addEventListener('pointercancel', up);
-  dTab.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setDrawer(!dOpen); } });
-  addEventListener('keydown', e => { if (e.key === 'Escape' && dOpen) setDrawer(false); });
-  addEventListener('resize', () => { drawer.style.transform = ''; });
-})();
-
 /* ---------- sons del rellotge de pèndol ---------- */
 let reverb = null, chimeBus = null;
 function ensureBus(){
@@ -1159,19 +1273,49 @@ function drawCap(ctx, red){
   ctx.restore();
 }
 function drawPendulum(ctx, th){
+  // llentilla de la foto amb volum: cantell gruixut, bisell, reflex que llisca i ombra separada del tauler
+  const L = BOBO.y + 60.8, BX = BOBO.x + 60.7, BR = 57, k = th / PEND_A, rodH = ROD_TIP - 96;
   ctx.save();
   ctx.beginPath(); ctx.rect(330, 669, 280, 560); ctx.clip();
-  ctx.save(); ctx.translate(PIV.x + 7, PIV.y + 5); ctx.rotate(th);
-  if ('filter' in ctx) ctx.filter = `blur(${4*S}px)`;
-  ctx.fillStyle = 'rgba(15,6,0,0.42)';
-  ctx.fillRect(-4, 90, 8, ROD_TIP - 90);
-  ctx.beginPath(); ctx.arc(BOBO.x + 60.7, BOBO.y + 60.8, 58, 0, Math.PI*2); ctx.fill();
+  ctx.save(); ctx.translate(PIV.x + 16, PIV.y + 12); ctx.rotate(th * 0.92);
+  if ('filter' in ctx) ctx.filter = `blur(${7*S}px)`;
+  ctx.fillStyle = 'rgba(10,4,0,0.5)';
+  ctx.fillRect(-4, 90, 9, ROD_TIP - 90);
+  ctx.beginPath(); ctx.ellipse(BX, L, 58, 60, 0, 0, Math.PI*2); ctx.fill();
   ctx.restore();
   if ('filter' in ctx) ctx.filter = 'none';
   ctx.translate(PIV.x, PIV.y); ctx.rotate(th);
-  ctx.fillStyle = brassGrad(ctx, 3.6); ctx.fillRect(-3.4, 90, 6.8, ROD_TIP - 96);
-  ctx.beginPath(); ctx.moveTo(-3.4, ROD_TIP - 8); ctx.lineTo(0, ROD_TIP); ctx.lineTo(3.4, ROD_TIP - 8); ctx.fill();
-  if (bobImg.complete) ctx.drawImage(bobImg, BOBO.x, BOBO.y, BOBO.s, BOBO.s);
+  // vareta cilíndrica
+  const rg = ctx.createLinearGradient(-4.2, 0, 4.2, 0);
+  rg.addColorStop(0,'#5e4216'); rg.addColorStop(.3,'#c9a457'); rg.addColorStop(.48,'#fff3c8'); rg.addColorStop(.62,'#d8b56a'); rg.addColorStop(1,'#4f3812');
+  ctx.fillStyle = rg; ctx.fillRect(-4.2, 90, 8.4, rodH);
+  ctx.fillStyle = 'rgba(255,252,235,.85)'; ctx.fillRect(-1.6 - k*0.6, 90, 1.1, rodH);
+  ctx.fillStyle = 'rgba(30,18,4,.45)'; ctx.fillRect(3.2, 90, 1, rodH);
+  // femella de regulació
+  const ny = ROD_TIP - 8;
+  ctx.fillStyle = rg; ctx.beginPath(); (ctx.roundRect ? ctx.roundRect(-7, ny-4, 14, 12, 2) : ctx.rect(-7, ny-4, 14, 12)); ctx.fill();
+  ctx.strokeStyle = 'rgba(40,25,5,.55)'; ctx.lineWidth = .6;
+  for (let x = -5; x <= 5; x += 2) { ctx.beginPath(); ctx.moveTo(x, ny-2); ctx.lineTo(x, ny+6); ctx.stroke(); }
+  // disc
+  ctx.translate(BX, L);
+  ctx.fillStyle = '#5a3e12'; ctx.beginPath(); ctx.arc(2.6, 3.4, BR, 0, Math.PI*2); ctx.fill();
+  const edge = ctx.createLinearGradient(-BR, -BR, BR, BR); edge.addColorStop(0,'#7a5a22'); edge.addColorStop(.6,'#4a3210'); edge.addColorStop(1,'#2c1d08');
+  ctx.fillStyle = edge; ctx.beginPath(); ctx.arc(1.6, 2.2, BR, 0, Math.PI*2); ctx.fill();
+  ctx.save(); ctx.beginPath(); ctx.arc(0, 0, BR, 0, Math.PI*2); ctx.clip();
+  if (bobImg.complete) ctx.drawImage(bobImg, -60.7, -60.8, BOBO.s, BOBO.s);
+  const sh = ctx.createRadialGradient(-BR*.35, -BR*.4, BR*.1, 0, 0, BR*1.05);
+  sh.addColorStop(0,'rgba(255,250,225,.18)'); sh.addColorStop(.55,'rgba(0,0,0,0)'); sh.addColorStop(1,'rgba(30,15,0,.55)');
+  ctx.fillStyle = sh; ctx.fillRect(-BR, -BR, 2*BR, 2*BR);
+  const hx = -BR*.32 - k*BR*.22, hy = -BR*.38 + Math.abs(k)*BR*.04;
+  const hl = ctx.createRadialGradient(hx, hy, 0, hx, hy, BR*.55);
+  hl.addColorStop(0,'rgba(255,255,240,.85)'); hl.addColorStop(.25,'rgba(255,248,215,.35)'); hl.addColorStop(1,'rgba(255,248,215,0)');
+  ctx.fillStyle = hl; ctx.fillRect(-BR, -BR, 2*BR, 2*BR);
+  ctx.globalAlpha = .22; ctx.fillStyle = '#fffbe8';
+  ctx.beginPath(); ctx.ellipse(BR*.3 - k*BR*.15, BR*.42, BR*.36, BR*.08, -.5, 0, Math.PI*2); ctx.fill(); ctx.globalAlpha = 1;
+  ctx.restore();
+  ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,240,195,.75)'; ctx.beginPath(); ctx.arc(0, 0, BR-1.5, Math.PI*.95, Math.PI*1.75); ctx.stroke();
+  ctx.strokeStyle = 'rgba(45,28,6,.7)'; ctx.beginPath(); ctx.arc(0, 0, BR-1.5, Math.PI*-.05, Math.PI*.75); ctx.stroke();
+  ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(30,18,4,.6)'; ctx.beginPath(); ctx.arc(0, 0, BR, 0, Math.PI*2); ctx.stroke();
   ctx.restore();
 }
 
@@ -1278,6 +1422,7 @@ const views = [
 function applyZoom(v){
   const box = v.box, col = v.col;
   col.classList.toggle('zoomed', v.zoom);
+  if (v === views[0]) backFace.classList.toggle('zoomed', v.zoom);
   if (!v.zoom || !col.offsetWidth) { box.style.transform = ''; return; }
   const bw = box.offsetWidth, bh = box.offsetHeight, k = bh / CH;
   const dx = DIAL_CV.x * k, dy = DIAL_CV.y * k, dd = 2*DIAL_CV.r*k;
@@ -1290,8 +1435,19 @@ function applyZoom(v){
   box.style.transform = `translate(${tx.toFixed(1)}px,${ty.toFixed(1)}px) scale(${Z.toFixed(3)})`;
 }
 addEventListener('resize', () => views.forEach(applyZoom));
+function sizePlate(){
+  const v = views[0]; if (v.zoom || !horiz()) return;
+  const box = document.getElementById('clockBox'), r = box.getBoundingClientRect(), f = backFace.getBoundingClientRect();
+  if (!r.height) return;
+  // a la dreta del tronc, sobre el mur (en sentit invers perquè la cara del darrere està girada)
+  const left = box.offsetLeft + box.parentElement.offsetLeft + box.offsetWidth*0.73, top = box.offsetTop + box.parentElement.offsetTop + box.offsetHeight*0.45;
+  calPlate.style.setProperty('--plx', left + 'px'); calPlate.style.setProperty('--ply', top + 'px');
+  calPlate.style.setProperty('--cb', box.offsetHeight + 'px');
+}
+addEventListener('resize', sizePlate); setTimeout(sizePlate, 50); setTimeout(sizePlate, 1500);
 views.forEach(v => v.col.addEventListener('click', e => {
   e.stopPropagation(); enableSound(true);
+  if (v === views[0] && pOpen) { setPaper(false); return; }
   const r = v.cv.getBoundingClientRect();
   const cx = (e.clientX - r.left) / r.width * CW, cy = (e.clientY - r.top) / r.height * CH;
   const px = cx - OX, py = cy - OY;
@@ -1360,6 +1516,214 @@ setTimeout(startBack, 300);
 /* ---------- calendari, lluna i sol ---------- */
 const $ = id => document.getElementById(id);
 const fmtT = d => d.toLocaleTimeString('ca-ES', { hour: '2-digit', minute: '2-digit' });
+/* ---------- bloc de fulls penjat ---------- */
+const paper = document.getElementById('paper'), calPlate = document.getElementById('calPlate');
+const ppTrack = document.getElementById('ppTrack'), ppTabs = [...document.querySelectorAll('#ppTabs button')];
+const PAGES = ppTabs.map(b => b.dataset.pg);
+let pOpen = false, pIdx = 0;
+const dOpen = false;            // (la placa lliscant ja no existeix)
+const horiz = () => innerWidth >= innerHeight;
+const backView = () => views[0];
+function setPage(i, anim = true){
+  pIdx = Math.max(0, Math.min(PAGES.length - 1, i));
+  ppTrack.classList.toggle('drag', !anim);
+  ppTrack.style.transform = `translateX(${-100*pIdx}%)`;
+  ppTabs.forEach((b, k) => { b.setAttribute('aria-selected', k === pIdx); if (k === pIdx) b.scrollIntoView({ block:'nearest', inline:'nearest' }); });
+  document.querySelectorAll('#ppDots i').forEach((d, k) => d.classList.toggle('on', k === pIdx));
+  const pg = PAGES[pIdx];
+  if (pg === 'not') loadNews(false);
+  if (pg === 'avui' || pg === 'cal') paintSaint(new Date());
+}
+function setPaper(open, page){
+  pOpen = open;
+  paper.classList.toggle('open', open); paper.setAttribute('aria-hidden', !open);
+  backFace.classList.toggle('popen', open); document.body.classList.toggle('popen', open);
+  if (page) setPage(PAGES.indexOf(page), false);
+  // només l'esfera: el rellotge s'apropa quan s'obre el full
+  const v = backView(); v.zoom = open;
+  requestAnimationFrame(() => applyZoom(v));
+  if (open) { renderCal(); refreshInfo(false); if (PAGES[pIdx] === 'not') loadNews(false); paintSaint(new Date()); }
+}
+const setDrawer = open => setPaper(open);
+document.getElementById('ppDots').innerHTML = PAGES.map(() => '<i></i>').join('');
+ppTabs.forEach((b, k) => b.addEventListener('click', e => { e.stopPropagation(); setPage(k); }));
+calPlate.addEventListener('click', e => { e.stopPropagation(); enableSound(true); setPaper(true); });
+document.getElementById('ppX').addEventListener('click', e => { e.stopPropagation(); setPaper(false); });
+paper.addEventListener('click', e => e.stopPropagation());
+addEventListener('keydown', e => {
+  if (!pOpen) return;
+  if (e.key === 'Escape') setPaper(false);
+  else if (e.key === 'ArrowRight') setPage(pIdx + 1);
+  else if (e.key === 'ArrowLeft') setPage(pIdx - 1);
+});
+// lliscar el full de costat per passar pàgina
+(() => {
+  const view = document.getElementById('ppView'); let s = null;
+  view.addEventListener('pointerdown', e => { if (e.pointerType === 'mouse' && e.button) return; s = { x: e.clientX, y: e.clientY, t: performance.now(), dx: 0, lock: null }; });
+  view.addEventListener('pointermove', e => {
+    if (!s) return; const dx = e.clientX - s.x, dy = e.clientY - s.y;
+    if (s.lock === null && Math.hypot(dx, dy) > 8) { s.lock = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y'; if (s.lock === 'x') view.setPointerCapture(e.pointerId); }
+    if (s.lock !== 'x') return;
+    s.dx = dx; ppTrack.classList.add('drag');
+    const w = view.clientWidth, edge = (pIdx === 0 && dx > 0) || (pIdx === PAGES.length - 1 && dx < 0) ? .3 : 1;
+    ppTrack.style.transform = `translateX(${-pIdx*w + dx*edge}px)`;
+  });
+  const end = () => {
+    if (!s) return; ppTrack.classList.remove('drag');
+    if (s.lock === 'x') { const v = s.dx / Math.max(1, performance.now() - s.t), w = view.clientWidth;
+      setPage(pIdx + ((s.dx < -w*.22 || v < -.45) ? 1 : (s.dx > w*.22 || v > .45) ? -1 : 0)); }
+    s = null;
+  };
+  view.addEventListener('pointerup', end); view.addEventListener('pointercancel', end);
+})();
+
+/* ---------- festius de Catalunya ---------- */
+function easter(y){ const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),
+  h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),mo=Math.floor((h+l-7*m+114)/31),da=((h+l-7*m+114)%31)+1;
+  return new Date(y, mo-1, da); }
+const festMemo = {};
+function holidays(y){
+  if (festMemo[y]) return festMemo[y];
+  const H = new Map(), add = (m, d, n) => H.set(`${m}-${d}`, n);
+  add(1,1,"Cap d'Any"); add(1,6,'Reis'); add(5,1,'Festa del Treball'); add(6,24,'Sant Joan'); add(8,15,"L'Assumpció");
+  add(9,11,'Diada Nacional de Catalunya'); add(10,12,'Festa Nacional d\'Espanya'); add(11,1,'Tots Sants');
+  add(12,6,'Dia de la Constitució'); add(12,8,'La Immaculada'); add(12,25,'Nadal'); add(12,26,'Sant Esteve');
+  const e = easter(y), gf = new Date(e), em = new Date(e); gf.setDate(e.getDate()-2); em.setDate(e.getDate()+1);
+  add(gf.getMonth()+1, gf.getDate(), 'Divendres Sant'); add(em.getMonth()+1, em.getDate(), 'Dilluns de Pasqua');
+  return festMemo[y] = H;
+}
+const holidayOf = d => holidays(d.getFullYear()).get(`${d.getMonth()+1}-${d.getDate()}`);
+
+/* ---------- calendari mensual ---------- */
+const MESOS = ['gener','febrer','març','abril','maig','juny','juliol','agost','setembre','octubre','novembre','desembre'];
+let calY, calM;
+function renderCal(y, m){
+  const t = new Date();
+  if (y === undefined) { y = t.getFullYear(); m = t.getMonth(); }
+  calY = y; calM = m;
+  $('calMes').textContent = MESOS[m].charAt(0).toUpperCase() + MESOS[m].slice(1); $('calAny').textContent = y;
+  let h = ['Dl','Dt','Dc','Dj','Dv','Ds','Dg'].map(d => `<div class="dw">${d}</div>`).join('');
+  const first = (new Date(y, m, 1).getDay() + 6) % 7, n = new Date(y, m+1, 0).getDate();
+  for (let i = 0; i < first; i++) h += '<div></div>';
+  for (let d = 1; d <= n; d++) {
+    const dt = new Date(y, m, d), wd = (first + d - 1) % 7, fe = holidayOf(dt), c = ['d'];
+    if (wd === 6) c.push('su'); if (fe) c.push('fe');
+    if (y === t.getFullYear() && m === t.getMonth() && d === t.getDate()) c.push('td');
+    h += `<div class="${c.join(' ')}"${fe ? ` title="${fe}"` : ''}>${d}</div>`;
+  }
+  $('calGrid').innerHTML = h;
+  // propera festa
+  for (let k = 0; k < 400; k++) { const d = new Date(t.getFullYear(), t.getMonth(), t.getDate() + k), f = holidayOf(d);
+    if (f) { $('calNextFest').textContent = k === 0 ? `Avui és festiu: ${f}` : `Propera festa: ${f}, ${d.getDate()} ${/^[aeiou]/.test(MESOS[d.getMonth()]) ? "d'" : 'de '}${MESOS[d.getMonth()]} (d'aquí a ${k} ${k === 1 ? 'dia' : 'dies'})`; break; } }
+}
+$('calPrev').addEventListener('click', e => { e.stopPropagation(); renderCal(calM === 0 ? calY-1 : calY, (calM+11)%12); });
+$('calNext').addEventListener('click', e => { e.stopPropagation(); renderCal(calM === 11 ? calY+1 : calY, (calM+1)%12); });
+$('calMes').addEventListener('dblclick', () => renderCal());
+
+/* ---------- avui: data, festa, dies de l'any ---------- */
+function paintToday(){
+  const d = new Date(), wd = d.toLocaleDateString('ca-ES', { weekday:'long' });
+  $('aNum').textContent = d.getDate(); $('aWd').textContent = wd.charAt(0).toUpperCase() + wd.slice(1);
+  $('aMy').textContent = `${MESOS[d.getMonth()]} de ${d.getFullYear()}`;
+  const f = holidayOf(d); $('aFesta').hidden = !f; $('aFesta').textContent = f || '';
+  const y0 = new Date(d.getFullYear(), 0, 1), len = (new Date(d.getFullYear()+1, 0, 1) - y0) / 864e5, doy = Math.floor((d - y0)/864e5) + 1;
+  $('aDoy').textContent = `Dia ${doy} de ${len} · falten ${len - doy} dies per acabar l'any`;
+  $('aDoyBar').style.width = (doy/len*100).toFixed(1) + '%';
+  if (calY === undefined || (calY === d.getFullYear() && calM === d.getMonth())) renderCal();
+}
+
+/* ---------- sant del dia i efemèride (Viquipèdia en català) ---------- */
+function netejaWiki(s){
+  let x = s.replace(/<ref[^>]*\/>/g,'').replace(/<ref[\s\S]*?<\/ref>/g,'');
+  for (let k = 0; k < 3; k++) x = x.replace(/\{\{[^{}]*\}\}/g,'');
+  x = x.replace(/\[\[(?:Fitxer|File|Imatge|Image):[^\]]*\]\]/gi,'').replace(/\[\[[^\]|]*\|([^\]]*)\]\]/g,'$1').replace(/\[\[([^\]]*)\]\]/g,'$1')
+    .replace(/\[https?:\S+\s([^\]]*)\]/g,'$1').replace(/'{2,3}/g,'').replace(/<[^>]+>/g,'').replace(/&nbsp;/g,' ');
+  return x.replace(/\s+/g,' ').trim();
+}
+function seccions(wt){ const out = []; let s = null; wt.split('\n').forEach(ln => { const m = /^==\s*([^=].*?)\s*==\s*$/.exec(ln);
+  if (m) { s = { titol: netejaWiki(m[1]), linies: [] }; out.push(s); } else if (s) s.linies.push(ln); }); return out; }
+let santKey = '';
+function paintSaint(d){
+  const key = d.toDateString(); if (key === santKey) return; santKey = key;
+  const m = MESOS[d.getMonth()], titol = `${d.getDate()} ${/^[aeiou]/.test(m) ? "d'" : 'de '}${m}`;
+  $('aEfem').textContent = 'Carregant…';
+  fetch(`https://ca.wikipedia.org/w/api.php?action=parse&page=${encodeURIComponent(titol)}&prop=wikitext&redirects=1&format=json&formatversion=2&origin=*`)
+    .then(r => r.json()).then(j => {
+      const sec = seccions((j && j.parse && j.parse.wikitext) || '');
+      const fets = sec.filter(s => /^(esdeveniments|fets)/i.test(s.titol)).flatMap(s => s.linies).filter(l => /^\*/.test(l))
+        .map(l => netejaWiki(l.replace(/^\*+\s*/,''))).map(l => /^(\d{1,4})\s*(?:aC)?\s*[-–—:,]\s*(.{25,260})$/.exec(l)).filter(Boolean);
+      const fet = fets.length ? fets[(d.getMonth()*31 + d.getDate())*7 % fets.length] : null;
+      const lin = sec.filter(s => /(sant|festes|celebra|commemora|onom)/i.test(s.titol)).flatMap(s => s.linies)
+        .map(l => netejaWiki(l.replace(/^[*:#]+\s*/,''))).filter(l => /\bsant[ae]?s?\b|\bonom/i.test(l) && l.length > 4);
+      let sant = lin.slice(0, 2).join(' · ').replace(/^(santoral|onomàstica)\s*:\s*/i,'');
+      if (sant.length > 160) sant = sant.slice(0, 157).replace(/\s\S*$/,'') + '…';
+      $('aSant').textContent = sant ? sant.charAt(0).toUpperCase() + sant.slice(1) : '—';
+      if (fet) { $('aEfem').innerHTML = ''; const b = document.createElement('b'); b.textContent = fet[1] + ' · '; $('aEfem').append(b, document.createTextNode(fet[2])); }
+      else $('aEfem').textContent = '—';
+      if (!fet && !sant) santKey = '';
+    }).catch(() => { santKey = ''; $('aEfem').textContent = 'Sense connexió'; });
+}
+
+/* ---------- notícies (Agència Catalana de Notícies; Google Notícies de reserva) ---------- */
+const PROX = [u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
+              u => 'https://api.codetabs.com/v1/proxy/?quest=' + encodeURIComponent(u),
+              u => 'https://corsproxy.io/?url=' + encodeURIComponent(u)];
+const neteja = s => (s || '').replace(/\s+/g, ' ').trim();
+const ambTemps = (p, ms) => Promise.race([p, new Promise((_, r) => setTimeout(() => r(new Error('temps')), ms))]);
+function acn(i = 0){
+  if (i >= PROX.length) return Promise.reject(new Error('cap'));
+  return ambTemps(fetch(PROX[i]('https://www.acn.cat/'), { cache:'no-store' }), 9000)
+    .then(r => { if (!r.ok) throw 0; return r.text(); }).then(html => {
+      const doc = new DOMParser().parseFromString(html, 'text/html'), vist = {}, ordre = [];
+      [...doc.querySelectorAll('a[href*="/new/"]')].forEach(a => {
+        let h = a.getAttribute('href') || ''; if (h.indexOf('http')) h = 'https://www.acn.cat' + (h[0] === '/' ? '' : '/') + h;
+        const t = neteja(a.textContent); if (t.length < 20) return;
+        if (!vist[h]) { vist[h] = t; ordre.push(h); } else if (t.length > vist[h].length) vist[h] = t; });
+      const r = ordre.slice(0, 10).map(h => ({ titol: vist[h], url: h })); if (!r.length) throw 0; return r;
+    }).catch(() => acn(i + 1));
+}
+function googleNews(){
+  const rss = 'https://news.google.com/rss/search?q=' + encodeURIComponent('site:acn.cat when:1d') + '&hl=ca&gl=ES&ceid=ES:ca';
+  return ambTemps(fetch('https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rss)), 9000).then(r => r.json())
+    .then(j => { const it = (j && j.items) || []; if (!it.length) throw 0;
+      return it.slice(0, 10).map(x => ({ titol: neteja(x.title).replace(/\s+-\s+(ACN|acn\.cat|Agència Catalana de Notícies)\s*$/i, ''), url: x.link })); });
+}
+let newsAt = 0, newsBusy = false;
+function loadNews(force){
+  if (newsBusy || (!force && Date.now() - newsAt < 10*60e3)) return;
+  newsBusy = true;
+  acn().catch(googleNews).then(l => {
+    newsAt = Date.now();
+    $('nLlista').innerHTML = '';
+    l.forEach((n, i) => { const a = document.createElement('a'); a.href = n.url; a.target = '_blank'; a.rel = 'noopener';
+      const b = document.createElement('b'); b.textContent = i + 1; const s = document.createElement('span'); s.textContent = n.titol;
+      a.append(b, s); $('nLlista').appendChild(a); });
+    $('nPeu').textContent = `Agència Catalana de Notícies · ${fmtT(new Date())}`;
+  }).catch(() => {
+    if (!newsAt) $('nLlista').innerHTML = '<p class="pp-p">No s\'han pogut carregar les notícies. <a href="https://www.acn.cat/" target="_blank" rel="noopener">Obre l\'ACN</a></p>';
+  }).then(() => { newsBusy = false; });
+}
+setInterval(() => { if (pOpen && PAGES[pIdx] === 'not') loadNews(false); }, 60e3);
+ppTrack.style.transform = 'translateX(0%)'; ppTabs[0].setAttribute('aria-selected', true); document.querySelector('#ppDots i').classList.add('on');
+
+/* ---------- previsió de 5 dies ---------- */
+const WX_IC = c => c === 0 || c === 1 ? 'sun' : c === 2 ? 'part' : c === 3 ? 'cloud' : (c === 45 || c === 48) ? 'fog' : ((c >= 71 && c <= 77) || c === 85 || c === 86) ? 'snow' : c >= 95 ? 'storm' : 'rain';
+const WX_SVG = {
+  sun:'<circle cx="13" cy="13" r="5"/><path d="M13 2v3M13 21v3M2 13h3M21 13h3M5 5l2 2M19 19l2 2M5 21l2-2M19 7l2-2"/>',
+  part:'<circle cx="9" cy="9" r="4"/><path d="M9 2v2M2 9h2M4 4l1.4 1.4"/><path d="M10 21a4 4 0 01.5-8 5.5 5.5 0 0110.4 1.8A3.4 3.4 0 0120 21z"/>',
+  cloud:'<path d="M7 19a5 5 0 01.6-10 6.5 6.5 0 0112.3 2.2A4 4 0 0119 19z"/>',
+  rain:'<path d="M7 15a5 5 0 01.6-10 6.5 6.5 0 0112.3 2.2A4 4 0 0119 15z"/><path d="M9 18l-1.5 3M14 18l-1.5 3M19 18l-1.5 3"/>',
+  storm:'<path d="M7 15a5 5 0 01.6-10 6.5 6.5 0 0112.3 2.2A4 4 0 0119 15z"/><path d="M13 15l-2 4h4l-2 4"/>',
+  snow:'<path d="M7 15a5 5 0 01.6-10 6.5 6.5 0 0112.3 2.2A4 4 0 0119 15z"/><path d="M9 19h.01M13 21h.01M17 19h.01"/>',
+  fog:'<path d="M4 9h18M2 13h22M5 17h16M3 21h20"/>' };
+function paintForecast(dly){
+  if (!dly || !dly.time) return;
+  const DW = ['Dg','Dl','Dt','Dc','Dj','Dv','Ds'];
+  $('wFc').innerHTML = dly.time.slice(1, 6).map((t, i) => { const d = new Date(t + 'T12:00'), k = i + 1;
+    return `<div><b>${DW[d.getDay()]}</b><svg viewBox="0 0 26 26">${WX_SVG[WX_IC(dly.weather_code[k])]}</svg>` +
+      `<span class="mx">${Math.round(dly.temperature_2m_max[k])}°</span><span class="mn">${Math.round(dly.temperature_2m_min[k])}°</span></div>`; }).join('');
+}
+
 function moonPhase(d){
   const syn = 29.530588853, ref = Date.UTC(2000,0,6,18,14);
   const p = (((d.getTime() - ref)/86400000) % syn + syn) % syn / syn;
@@ -1382,6 +1746,7 @@ function drawMoon(p){
 }
 function updateCalendar(){
   const d = new Date();
+  if (typeof paintToday === 'function') paintToday();
   const wd = d.toLocaleDateString('ca-ES', { weekday: 'long' });
   $('cWd').textContent = wd.charAt(0).toUpperCase() + wd.slice(1);
   $('cDn').textContent = d.getDate();
@@ -1470,19 +1835,20 @@ async function refreshInfo(force){
       fitAll();
     })
     .catch(() => { if ($('wPlace').textContent === 'Localitzant…') $('wPlace').textContent = 'Ubicació actual'; });
-  const q = `latitude=${lat}&longitude=${lon}&timezone=auto&forecast_days=2` +
+  const q = `latitude=${lat}&longitude=${lon}&timezone=auto&forecast_days=6` +
     `&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m` +
-    `&hourly=precipitation_probability,precipitation,snowfall,weather_code,visibility,wind_gusts_10m&daily=sunrise,sunset`;
+    `&hourly=precipitation_probability,precipitation,snowfall,weather_code,visibility,wind_gusts_10m&daily=sunrise,sunset,weather_code,temperature_2m_max,temperature_2m_min`;
   try {
     const w = await getJSON(`https://api.open-meteo.com/v1/forecast?${q}`);
     const c = w.current;
-    $('wAlt').textContent = `Altitud ${nf0.format(w.elevation)} m`;
+    $('wAlt').textContent = `${nf0.format(w.elevation)} m`;
     $('wTemp').innerHTML = `${nf1.format(c.temperature_2m)}<small>°C</small>`;
     $('wCond').textContent = WMO[c.weather_code] || '';
     $('wFeel').textContent = `Sensació ${nf0.format(c.apparent_temperature)}°`;
     $('wHum').textContent = `Humitat ${c.relative_humidity_2m} %`;
     $('wWind').textContent = `Vent ${nf0.format(c.wind_speed_10m)} km/h ${compass(c.wind_direction_10m)}`;
     // sortida i posta del sol
+    paintForecast(w.daily);
     const sr = new Date(w.daily.sunrise[0]), ss = new Date(w.daily.sunset[0]);
     $('sRise').textContent = `Surt ${fmtT(sr)}`; $('sSet').textContent = `es pon ${fmtT(ss)}`;
     const len = (ss - sr)/60000; $('sLen').textContent = `${Math.floor(len/60)} h ${Math.round(len%60)} min de llum`;
