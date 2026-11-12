@@ -519,6 +519,22 @@
   body.redn #paper .al.on{background:color-mix(in srgb,var(--nc) 20%,transparent)!important;color:var(--nc);border-color:var(--nc)}
   body.redn .pp-rings i,body.redn .pp-x{filter:grayscale(1) brightness(.3)}
   body.redn .pp-moon{filter:grayscale(1) brightness(.75)}
+  /* ===== 3D: inclinació, gruix de la caixa, ombra a la paret i reflex del vidre ===== */
+  .clockCol{perspective:1600px;perspective-origin:50% 40%}
+  .tilt{position:absolute;inset:0;transform-style:preserve-3d;will-change:transform}
+  .tilt > canvas{transform:translateZ(1px)}
+  .tilt > .nightLayer{transform:translateZ(2px)}
+  .tdepth{position:absolute;inset:0;background:0 0/100% 100% no-repeat;pointer-events:none;
+    transform:translateZ(calc(var(--z) * var(--dz,2px) * -1));filter:brightness(calc(1 - .9*var(--n,0)))}
+  .tshadow{position:absolute;inset:0;background:0 0/100% 100% no-repeat;pointer-events:none;
+    transform:translateZ(calc(var(--dz,2px) * -12)) translate(calc(var(--sz,40px)*.45),calc(var(--sz,40px)*.35)) scale(1.02);filter:blur(12px);opacity:calc(.6 - .4*var(--n,0))}
+  .tglare{position:absolute;left:20.5%;top:13.1%;width:58.2%;height:20.8%;border-radius:50%;pointer-events:none;overflow:hidden;
+    transform:translateZ(3px);mix-blend-mode:screen;opacity:calc(1 - var(--n,0))}
+  .tglare::before{content:"";position:absolute;inset:-30%;
+    background:radial-gradient(ellipse 30% 22% at calc(36% + var(--gx,0%)) calc(30% + var(--gy,0%)),rgba(255,250,230,.28),rgba(255,250,230,0) 70%),
+      linear-gradient(115deg,rgba(255,255,255,0) calc(40% + var(--gx,0%)),rgba(255,255,255,.10) calc(46% + var(--gx,0%)),rgba(255,255,255,0) calc(52% + var(--gx,0%)))}
+  body.zz .tdepth,body.zz .tshadow{opacity:0}
+  @media (prefers-reduced-motion: reduce){ .tilt{transition:none} }
   @media (prefers-reduced-motion: reduce){ #drawer,#clockBox,#paper,.pp-track{transition:none} }
   /* ===== ràdio i podcasts ===== */
   .pp-sub{font-weight:400;letter-spacing:.02em;text-transform:none;font-size:15px}
@@ -594,8 +610,11 @@
 </main>
   <div id="fClockCol" class="clockCol" title="Toca el rellotge per apropar l'esfera · toca un pes per donar-li corda">
     <div id="fClockBox" class="clockBox">
-      <canvas id="fpc" width="1210" height="3380" aria-label="Rellotge de paret de pèndol"></canvas>
-      <canvas id="fpcN" class="nightLayer" width="1210" height="3380" aria-hidden="true"></canvas>
+      <div class="tilt">
+        <canvas id="fpc" width="1210" height="3380" aria-label="Rellotge de paret de pèndol"></canvas>
+        <canvas id="fpcN" class="nightLayer" width="1210" height="3380" aria-hidden="true"></canvas>
+        <div class="tglare"></div>
+      </div>
     </div>
   </div>
   <div class="fshade"></div>
@@ -604,8 +623,11 @@
     <div id="patina"></div>
     <div id="clockCol" class="clockCol" title="Toca el rellotge per apropar l'esfera · toca un pes per donar-li corda">
       <div id="clockBox" class="clockBox">
-        <canvas id="pc" width="1210" height="3380" aria-label="Rellotge de paret de pèndol amb pesos, esfera de llautó i xifres romanes. Toca'l per apropar l'esfera; toca un pes per donar-li corda."></canvas>
-        <canvas id="pcN" class="nightLayer" width="1210" height="3380" aria-hidden="true"></canvas>
+        <div class="tilt">
+          <canvas id="pc" width="1210" height="3380" aria-label="Rellotge de paret de pèndol amb pesos, esfera de llautó i xifres romanes. Toca'l per apropar l'esfera; toca un pes per donar-li corda."></canvas>
+          <canvas id="pcN" class="nightLayer" width="1210" height="3380" aria-hidden="true"></canvas>
+          <div class="tglare"></div>
+        </div>
           </div>
     </div>
 
@@ -1414,7 +1436,7 @@ function buildStatics(){
   if (baseCv) return true;
   if (![clockImg, numImg, chainImg, wLImg, wRImg].every(i => i.complete && i.naturalWidth)) return false;
   let b; [baseCv, b] = mk(CW, CH);
-  b.shadowColor = 'rgba(0,0,0,.55)'; b.shadowBlur = 16*S; b.shadowOffsetX = 14*S; b.shadowOffsetY = 10*S;
+  b.shadowColor = 'rgba(0,0,0,.35)'; b.shadowBlur = 4*S; b.shadowOffsetX = 2*S; b.shadowOffsetY = 2*S;
   b.drawImage(clockImg, 196 + OX, 20 + OY);
   const a = document.createElement('canvas'); a.width = CW; a.height = CH;
   const ac = a.getContext('2d'); ac.drawImage(clockImg, 196 + OX, 20 + OY);
@@ -1573,6 +1595,72 @@ views.forEach(v => v.col.addEventListener('click', e => {
   if (onClock || v.zoom) { v.zoom = !v.zoom; applyZoom(v); }
 }));
 
+/* ---------- efecte 3D: el rellotge s'inclina (ratolí, inclinació del mòbil o balanceig lent) ---------- */
+const TILT_N = 10, TILT_D = 0.05;        // capes de gruix i profunditat de la caixa (fracció de l'alçada)
+const tiltReduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let tX = 0, tY = 0, tgX = 3, tgY = 6, tLast = -1e9, tSrc = 'idle';
+const tiltEls = [...document.querySelectorAll('.tilt')];
+function buildDepth(){
+  if (!baseAlpha || buildDepth.done) return; buildDepth.done = true;
+  // silueta del rellotge pintada de fusta fosca (el cantell de la caixa) i ombra per a la paret
+  const W = CW, H = CH, sil = document.createElement('canvas'); sil.width = W; sil.height = H;
+  const g = sil.getContext('2d'); g.drawImage(clockImg, 196 + OX, 20 + OY);
+  g.globalCompositeOperation = 'source-in';
+  const gr = g.createLinearGradient(0, 0, W, 0); gr.addColorStop(0, '#24140a'); gr.addColorStop(.5, '#3b2414'); gr.addColorStop(1, '#1a0e06');
+  g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  const sh = document.createElement('canvas'); sh.width = W; sh.height = H;
+  const s = sh.getContext('2d'); s.drawImage(sil, 0, 0); s.globalCompositeOperation = 'source-in'; s.fillStyle = '#000'; s.fillRect(0, 0, W, H);
+  Promise.all([sil, sh].map(c => new Promise(r => c.toBlob(b => r(URL.createObjectURL(b)))))).then(([uSil, uSh]) => {
+    tiltEls.forEach(el => {
+      const shd = document.createElement('div'); shd.className = 'tshadow'; shd.style.backgroundImage = `url(${uSh})`; el.prepend(shd);
+      for (let i = TILT_N; i >= 1; i--) { const d = document.createElement('div'); d.className = 'tdepth'; d.style.backgroundImage = `url(${uSil})`;
+        d.style.setProperty('--z', i); shd.after(d); }
+    });
+    sizeDepth();
+  });
+}
+function sizeDepth(){
+  tiltEls.forEach(el => { const h = el.offsetHeight; el.style.setProperty('--dz', (h * TILT_D / TILT_N).toFixed(2) + 'px'); el.style.setProperty('--sz', (h * .07).toFixed(1) + 'px'); });
+}
+addEventListener('resize', sizeDepth);
+addEventListener('pointermove', e => {
+  if (e.pointerType === 'touch' || tSrc === 'gyro') return;
+  const nx = e.clientX/innerWidth - .5, ny = e.clientY/innerHeight - .5;
+  tgY = -nx*24; tgX = ny*12; tLast = performance.now(); tSrc = 'mouse';
+}, { passive: true });
+// mòbil: inclinació real del telèfon (a l'iPhone cal permís, que es demana amb el primer toc)
+let gyBase = null;
+function onOrient(e){
+  if (e.beta == null) return;
+  const a = (screen.orientation && screen.orientation.angle) || window.orientation || 0;
+  let dx, dy;
+  if (a === 90) { dx = e.beta; dy = -e.gamma; } else if (a === -90 || a === 270) { dx = -e.beta; dy = e.gamma; } else { dx = e.gamma; dy = e.beta; }
+  gyBase = gyBase == null ? dy : gyBase + (dy - gyBase)*0.01;      // es recentra a poc a poc
+  tgY = Math.max(-16, Math.min(16, dx*0.7)); tgX = Math.max(-9, Math.min(9, -(dy - gyBase)*0.5));
+  tLast = performance.now(); tSrc = 'gyro';
+}
+if ('DeviceOrientationEvent' in window) {
+  if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+    let asked = false;
+    try { if (localStorage.getItem('gyro') === '1') asked = false; } catch(e){}
+    addEventListener('pointerup', function ask(){
+      if (asked) return; asked = true; removeEventListener('pointerup', ask);
+      DeviceOrientationEvent.requestPermission().then(r => { if (r === 'granted') { addEventListener('deviceorientation', onOrient); try { localStorage.setItem('gyro','1'); } catch(e){} } }).catch(() => {});
+    });
+  } else addEventListener('deviceorientation', onOrient);
+}
+function updTilt(ts){
+  buildDepth();
+  const quiet = (typeof zzOn !== 'undefined' && zzOn);
+  let k = tiltReduce ? .3 : 1;
+  if (views[0].zoom) k *= .35;
+  if (quiet) k *= .25;
+  if (ts - tLast > 5000 && !tiltReduce) { tSrc = 'idle'; tgY = 7*Math.sin(ts/9000); tgX = 3 + 1.5*Math.sin(ts/13000); }
+  tX += (tgX*k - tX)*.06; tY += (tgY*k - tY)*.06;
+  const tr = `perspective(${(tiltEls[0].offsetHeight*1.9|0) || 1600}px) rotateX(${tX.toFixed(3)}deg) rotateY(${tY.toFixed(3)}deg)`;
+  tiltEls.forEach(el => { el.style.transform = tr; el.style.setProperty('--gx', (tY*1.8).toFixed(1) + '%'); el.style.setProperty('--gy', (-tX*2.2).toFixed(1) + '%'); });
+}
+
 /* ---------- bucle del rellotge ---------- */
 const compMQ = matchMedia('(min-aspect-ratio: 6/5)');
 const clockVisible = () => side === 'back' || flipping || compMQ.matches;
@@ -1585,6 +1673,7 @@ function backFrame(tNow){
   const sec = Math.floor(t);
   if (sec !== lastSign) { if (lastSign !== 0 && !flipping) pendTick(sec % 2 === 1); lastSign = sec; }
   updateWeights();
+  updTilt(tNow);
   pctx.setTransform(S,0,0,S,0,0); pctx.clearRect(0,0,CW,CH);
   if (buildStatics()) pctx.drawImage(baseCv, 0, 0, CW, CH);
   pctx.save(); pctx.translate(OX, OY);
